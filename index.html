@@ -840,17 +840,16 @@ body::before{
 </style>
 </head>
 <body>
-<div id="jscheck" style="position:fixed;bottom:10px;right:10px;z-index:99999;
-  background:#16a34a;color:#fff;font-size:11px;font-weight:700;
-  padding:4px 10px;border-radius:20px;display:none">JS ✓</div>
 <script>
-// Immediate JS test - runs before anything else
-document.getElementById('jscheck').style.display='block';
-window.onerror = function(msg,src,line,col,err){
-  var d=document.getElementById('jscheck');
-  if(d){d.style.background='#dc2626';d.textContent='JS Error: '+msg.slice(0,30);}
-  return false;
+// Silent error handler - don't show errors to user
+window.onerror = function(msg,url,line,col,err){
+  console.error('JS Error:', msg, 'line:', line);
+  return true; // prevent default error display
 };
+window.addEventListener('unhandledrejection', function(e){
+  console.error('Promise error:', e.reason);
+  e.preventDefault();
+});
 </script>
 
 <!-- TOP BAR -->
@@ -2745,13 +2744,13 @@ async function sbSyncThen(cb){
 
 
 const _screenInits = {
-  larguillo: initLarguillo,
-  rd: ()=>{ sbSyncThen(rdInit); },
-  acarreos: ()=>{ sbSyncThen(acarInit); },
-  personal: ()=>{ sbSyncThen(personalInit); },
-  equipos: ()=>{ sbSyncThen(equiposInit); },
-  materiales: ()=>{ sbSyncThen(materialesInit); },
-  documentos: ()=>{ sbSyncThen(documentosInit); },
+  larguillo: ()=>{ if(typeof initLarguillo==='function') initLarguillo(); },
+  rd:        ()=>{ sbSyncThen(()=>{ if(typeof rdInit==='function') rdInit(); }); },
+  acarreos:  ()=>{ if(typeof acarInit==='function') acarInit(); },
+  personal:  ()=>{ sbSyncThen(()=>{ if(typeof personalInit==='function') personalInit(); }); },
+  equipos:   ()=>{ sbSyncThen(()=>{ if(typeof equiposInit==='function') equiposInit(); }); },
+  materiales:()=>{ sbSyncThen(()=>{ if(typeof materialesInit==='function') materialesInit(); }); },
+  documentos:()=>{ sbSyncThen(()=>{ if(typeof documentosInit==='function') documentosInit(); }); },
 };
 
 
