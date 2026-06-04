@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="RogMay Control">
+<title>RogMay Control · OC 6559</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f4f1eb;color:#1c2b4a}
+.topbar{background:#1c2b4a;padding:14px 16px;border-bottom:3px solid #c94b1a}
+.logo{font-size:20px;font-weight:900;color:#fff;letter-spacing:2px}
+.logo span{color:#c94b1a}
+.logo-sub{font-size:10px;color:rgba(255,255,255,.4);margin-top:2px}
+.hero{background:linear-gradient(135deg,#0f1e3a,#2e4a7a);padding:16px}
+.hero h2{font-size:20px;font-weight:900;color:#fff;line-height:1.1}
+.hero h2 span{color:#e8a000;font-size:14px;display:block;margin-top:2px}
+.hero-sub{font-size:10px;color:rgba(255,255,255,.4);margin-top:4px}
+.kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:12px}
+.kpi{background:rgba(255,255,255,.08);border-radius:6px;padding:8px}
+.kpi-l{font-size:9px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px}
+.kpi-v{font-size:20px;font-weight:900;margin-top:2px}
+.alertas{margin:12px;background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;padding:10px 12px}
+.alertas b{font-size:11px;color:#dc2626}
+.alerta-row{display:flex;align-items:center;gap:6px;margin-top:5px}
+.tag{font-size:10px;font-weight:700;padding:1px 6px;border-radius:3px;flex-shrink:0}
+.tag-r{background:#dc2626;color:#fff}
+.tag-a{background:#f59e0b;color:#fff}
+.tag-i{background:#3b82f6;color:#fff}
+.alerta-txt{font-size:11px;color:#374151}
+.section{padding:12px 12px 0}
+.section-title{font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.mod-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 12px 20px}
+.mod{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px;cursor:pointer;display:flex;align-items:center;gap:10px;border-left:4px solid var(--c);-webkit-tap-highlight-color:rgba(0,0,0,.1)}
+.mod-icon{font-size:24px;flex-shrink:0}
+.mod-name{font-size:13px;font-weight:700;color:#1c2b4a}
+.mod-sub{font-size:10px;color:#6b7280;margin-top:2px}
+.screen{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#f4f1eb;z-index:100;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.sbar{background:#1c2b4a;padding:12px 16px;border-bottom:3px solid #c94b1a;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:10}
+.back{background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:6px;padding:7px 14px;font-size:13px;font-weight:700;cursor:pointer;font-family:Arial,sans-serif}
+.stitle{font-size:14px;font-weight:700;color:#fff;flex:1}
+.pdfbtn{background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-family:Arial,sans-serif}
+.content{padding:14px}
+.card{background:#fff;border-radius:10px;padding:14px;margin-bottom:14px;border:1px solid #e2e8f0}
+.ctitle{font-size:13px;font-weight:700;color:#1c2b4a;margin-bottom:12px}
+label{display:block;font-size:11px;font-weight:700;color:#374151;margin-bottom:3px}
+input,select{width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;font-size:12px;font-family:Arial,sans-serif;background:#fff;-webkit-appearance:none;margin-bottom:8px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.span2{grid-column:span 2}
+.gbtn{width:100%;padding:11px;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:Arial,sans-serif;margin-top:4px}
+.green{background:#16a34a;color:#fff}
+.red{background:#dc2626;color:#fff}
+.blue{background:#1c2b4a;color:#fff}
+.msgbox{padding:8px 12px;border-radius:6px;font-size:12px;font-weight:600;margin-top:8px;display:none}
+.msgbox.ok{background:#dcfce7;color:#166534;display:block}
+.msgbox.err{background:#fef2f2;color:#dc2626;display:block}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:#f1f5f9;padding:7px 8px;text-align:left;font-size:11px;border-bottom:2px solid #e2e8f0;white-space:nowrap}
+td{padding:6px 8px;border-bottom:1px solid #f1f5f9;vertical-align:middle}
+.empty{text-align:center;padding:28px;color:#9ca3af;font-size:13px}
+.chip{display:inline-block;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:700}
+.lg-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.lg-tbl{border-collapse:collapse;table-layout:fixed}
+.lg-act{font-size:7.5px;font-weight:700;padding:2px 4px;width:68px;min-width:68px;color:#fff;vertical-align:middle;border-bottom:1px solid rgba(255,255,255,.15);line-height:1.2}
+.lg-cell{width:14px;min-width:14px;height:18px;padding:0;border:1px solid #dde3ea}
+.lg-pk{width:14px;height:38px;padding:0;font-size:6px;writing-mode:vertical-rl;transform:rotate(180deg);text-align:center;border:1px solid #dde3ea;vertical-align:bottom;padding-bottom:2px;white-space:nowrap}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;font-size:10px;color:#6b7280;align-items:center}
+.lbox{width:14px;height:10px;border-radius:2px;border:1px solid rgba(0,0,0,.1);display:inline-block;margin-right:3px;vertical-align:middle}
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.bar-lbl{font-size:11px;color:#374151;width:72px;flex-shrink:0;font-weight:600}
+.bar-track{flex:1;height:10px;background:#e2e8f0;border-radius:5px;overflow:hidden}
+.bar-fill{height:100%;border-radius:5px}
+.bar-val{font-size:11px;font-weight:700;width:75px;text-align:right}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;padding:16px;overflow-y:auto}
+.overlay-box{background:#fff;border-radius:12px;max-width:860px;margin:0 auto;overflow:hidden}
+.overlay-head{background:#1c2b4a;padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
+.overlay-head h3{color:#fff;font-size:14px;font-weight:700}
+.close-btn{background:rgba(255,255,255,.2);border:none;color:#fff;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:14px}
+.zoom-bar{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.zbtn{background:#e2e8f0;border:none;border-radius:6px;width:28px;height:26px;font-size:15px;cursor:pointer;font-weight:700}
+.zreset{background:#e2e8f0;border:none;border-radius:6px;padding:0 8px;height:26px;font-size:11px;cursor:pointer}
+.zpct{font-size:11px;font-weight:700;color:#1c2b4a;min-width:35px;text-align:center}
+@media print{
+  .topbar,.back,.gbtn,.legend,.overlay,.pdfbtn,.zoom-bar{display:none!important}
+  .screen{position:static!important;display:block!important;height:auto!important;overflow:visible!important}
+  #dashboard{display:none!important}
+  .card{break-inside:avoid;border:1px solid #ccc}
+  body{background:#fff}
+  @page{size:landscape;margin:10mm}
+}
+</style>
+</head>
+<body>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <div style="background:#1c2b4a;padding:12px 18px;border-bottom:3px solid #c94b1a;display:flex;align-items:center;justify-content:space-between">
+    <div>
+      <div style="font-size:22px;font-weight:900;color:#fff;letter-spacing:2px">RogMay <span style="color:#c94b1a">Control</span></div>
+      <div style="font-size:10px;color:rgba(255,255,255,.4);letter-spacing:1px;margin-top:1px">FIELD MANAGER · OC 6559</div>
+    </div>
+    <div id="save-ind" style="font-size:10px;color:rgba(255,255,255,.4);text-align:right"></div>
+  </div>
+
+  <!-- HERO BANNER -->
+  <div style="background:linear-gradient(135deg,#0a1628 0%,#1c2b4a 50%,#0e3460 100%);padding:20px 18px 16px;position:relative;overflow:hidden">
+    <div style="position:absolute;right:16px;top:12px;font-size:72px;font-weight:900;color:rgba(255,255,255,.04);line-height:1;letter-spacing:-2px">6559</div>
+    <div style="font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:2px;margin-bottom:4px">Camino a Pera · Reforma, Chiapas</div>
+    <div style="font-family:Arial Black,Arial;font-weight:900;font-size:22px;color:#fff;line-height:1.1">SALIDA DIRECCIONAL<br><span style="color:#e8a000">938 METROS</span></div>
+    <div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:6px">XIMA INDUSTRIAL SA DE CV · RFC: XIN180817QN8 · $16,614,885.20 c/IVA</div>
+
+    <!-- KPI GRID -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px">
+      <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:10px 12px">
+        <div style="font-size:9px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px">Avance Prog.</div>
+        <div style="font-size:24px;font-weight:900;color:#93c5fd;line-height:1.1;margin-top:2px">41.67%</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.3);margin-top:1px">al 19-May-2026</div>
+      </div>
+      <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:10px 12px">
+        <div style="font-size:9px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px">Avance Real</div>
+        <div style="font-size:24px;font-weight:900;color:#fb923c;line-height:1.1;margin-top:2px">16.40%</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.3);margin-top:1px">SPI 0.394</div>
+      </div>
+      <div style="background:rgba(201,75,26,.2);border:1px solid rgba(201,75,26,.4);border-radius:8px;padding:10px 12px">
+        <div style="font-size:9px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px">Estado</div>
+        <div style="font-size:18px;font-weight:900;color:#f87171;line-height:1.1;margin-top:2px">ATRASO</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.3);margin-top:1px">+58 días estimado</div>
+      </div>
+      <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:10px 12px">
+        <div style="font-size:9px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px">Días Trans.</div>
+        <div style="font-size:24px;font-weight:900;color:#fff;line-height:1.1;margin-top:2px">21</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.3);margin-top:1px">de 45 totales</div>
+      </div>
+      <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:10px 12px">
+        <div style="font-size:9px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px">Término Est.</div>
+        <div style="font-size:22px;font-weight:900;color:#fbbf24;line-height:1.1;margin-top:2px">20 AGO</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.3);margin-top:1px">Contractual: 12-Jun</div>
+      </div>
+      <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:10px 12px">
+        <div style="font-size:9px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px">Monto OC</div>
+        <div style="font-size:22px;font-weight:900;color:#4ade80;line-height:1.1;margin-top:2px">$14.3M</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.3);margin-top:1px">s/IVA MXN</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALERTAS -->
+  <div style="margin:12px 14px 0;background:#fff;border-radius:10px;border:1px solid #e2e8f0;overflow:hidden">
+    <div style="background:#dc2626;padding:8px 14px;display:flex;align-items:center;gap:8px">
+      <span style="color:#fff;font-size:12px;font-weight:700">⚠ Alertas activas</span>
+      <span style="background:rgba(255,255,255,.2);color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px">4</span>
+    </div>
+    <div style="padding:10px 14px">
+      <div style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid #f1f5f9">
+        <span style="background:#dc2626;color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:1px">CRÍTICO</span>
+        <span style="font-size:11px;color:#374151">Terraplén sin iniciar — 50% del peso contractual, 0% de avance real</span>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid #f1f5f9">
+        <span style="background:#dc2626;color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:1px">CRÍTICO</span>
+        <span style="font-size:11px;color:#374151">SPI 0.394 — se requiere 3.64%/día vs 0.60%/día actual</span>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid #f1f5f9">
+        <span style="background:#f59e0b;color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:1px">ALERTA</span>
+        <span style="font-size:11px;color:#374151">Corte y Nivelación al 47% — desvío de 7.42 pp vs programado</span>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:8px;padding:5px 0">
+        <span style="background:#3b82f6;color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:1px">INFO</span>
+        <span style="font-size:11px;color:#374151">Término contractual: 12-Jun-2026 · Corte al: 19-May-2026</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MÓDULOS -->
+  <div style="padding:14px 14px 4px">
+    <div style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Módulos del proyecto</div>
+  </div>
+
+  <!-- ROW 1: Larguillo full width -->
+  <div style="padding:0 14px 10px">
+    <div onclick="ir('larguillo')" style="background:linear-gradient(135deg,#1c2b4a,#2e4a7a);border-radius:12px;padding:16px;cursor:pointer;display:flex;align-items:center;gap:14px;-webkit-tap-highlight-color:rgba(0,0,0,.1)">
+      <span style="font-size:32px">🗺</span>
+      <div style="flex:1">
+        <div style="font-size:15px;font-weight:700;color:#fff">Larguillo de Actuaciones</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:2px">Control visual de avance · PK 0+000 al 1+555.09</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:18px;font-weight:900;color:#fb923c">16.40%</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.4)">Avance real</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 2: RD + Personal -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 14px 10px">
+    <div onclick="ir('rd')" style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px;cursor:pointer;border-top:4px solid #c94b1a;-webkit-tap-highlight-color:rgba(0,0,0,.08)">
+      <div style="font-size:22px;margin-bottom:6px">📋</div>
+      <div style="font-size:13px;font-weight:700;color:#1c2b4a">Reporte RD</div>
+      <div style="font-size:10px;color:#6b7280;margin-top:2px">Captura y historial diario</div>
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid #f1f5f9;font-size:10px;color:#6b7280">Último RD: <b style="color:#1c2b4a">19 May</b></div>
+    </div>
+    <div onclick="ir('personal')" style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px;cursor:pointer;border-top:4px solid #2e6b4f;-webkit-tap-highlight-color:rgba(0,0,0,.08)">
+      <div style="font-size:22px;margin-bottom:6px">👷</div>
+      <div style="font-size:13px;font-weight:700;color:#1c2b4a">Personal</div>
+      <div style="font-size:10px;color:#6b7280;margin-top:2px">Nómina y asistencia</div>
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid #f1f5f9;font-size:10px;color:#6b7280">Registrados: <b style="color:#1c2b4a" id="dash-pers-cnt">—</b></div>
+    </div>
+  </div>
+
+  <!-- ROW 3: Equipos + Materiales -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 14px 10px">
+    <div onclick="ir('equipos')" style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px;cursor:pointer;border-top:4px solid #e8a000;-webkit-tap-highlight-color:rgba(0,0,0,.08)">
+      <div style="font-size:22px;margin-bottom:6px">🚜</div>
+      <div style="font-size:13px;font-weight:700;color:#1c2b4a">Equipos</div>
+      <div style="font-size:10px;color:#6b7280;margin-top:2px">Horas y diésel</div>
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid #f1f5f9;font-size:10px;color:#6b7280">Flota: <b style="color:#1c2b4a" id="dash-eq-cnt">—</b></div>
+    </div>
+    <div onclick="ir('materiales')" style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px;cursor:pointer;border-top:4px solid #7c3aed;-webkit-tap-highlight-color:rgba(0,0,0,.08)">
+      <div style="font-size:22px;margin-bottom:6px">🧱</div>
+      <div style="font-size:13px;font-weight:700;color:#1c2b4a">Materiales</div>
+      <div style="font-size:10px;color:#6b7280;margin-top:2px">Inventario y consumos</div>
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid #f1f5f9;font-size:10px;color:#6b7280">Movimientos: <b style="color:#1c2b4a" id="dash-mat-cnt">—</b></div>
+    </div>
+  </div>
+
+  <!-- ROW 4: Acarreos full width -->
+  <div style="padding:0 14px 10px">
+    <div onclick="ir('acarreos')" style="background:linear-gradient(135deg,#0e4a5a,#0891b2);border-radius:12px;padding:16px;cursor:pointer;display:flex;align-items:center;gap:14px;-webkit-tap-highlight-color:rgba(0,0,0,.1)">
+      <span style="font-size:32px">🚛</span>
+      <div style="flex:1">
+        <div style="font-size:15px;font-weight:700;color:#fff">Acarreos</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:2px">Dashboard de viajes · Arena y Revestimiento</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:18px;font-weight:900;color:#fff" id="dash-acar-viajes">170</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.4)" id="dash-acar-m3">3,338 M³</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 5: Documentos -->
+  <div style="padding:0 14px 20px">
+    <div onclick="ir('documentos')" style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px;cursor:pointer;display:flex;align-items:center;gap:12px;border-left:4px solid #1a5fa8;-webkit-tap-highlight-color:rgba(0,0,0,.08)">
+      <span style="font-size:24px">📁</span>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:700;color:#1c2b4a">Documentos del Proyecto</div>
+        <div style="font-size:10px;color:#6b7280;margin-top:2px">Planos, OC, permisos y dossier de calidad</div>
+      </div>
+      <div style="background:#fee2e2;color:#dc2626;font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px">OC Vence 12-Jun</div>
+    </div>
+  </div>
+</div>
+<!-- LARGUILLO -->
+<div class="screen" id="s-larguillo">
+  <div class="sbar">
+    <button class="back" onclick="volver()">← Atras</button>
+    <span class="stitle">Larguillo OC 6559</span>
+    <button class="pdfbtn" onclick="printMod('s-larguillo')">PDF</button>
+    <button onclick="verAvances()" style="background:#f97316;border:none;color:#fff;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-family:Arial,sans-serif">Ver avances (<span id="lg-cnt">0</span>)</button>
+    <button onclick="verIncidencias()" style="background:#7c3aed;border:none;color:#fff;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-family:Arial,sans-serif">Ver incidencias (<span id="nt-cnt">0</span>)</button>
+  </div>
+  <div class="content">
+    <div class="card">
+      <div class="ctitle">Captura de avance</div>
+      <div class="g2">
+        <div><label>Fecha</label><input type="date" id="lg-fecha"></div>
+        <div><label>Unidad</label><input id="lg-unidad" readonly style="background:#f9fafb;color:#6b7280"></div>
+        <div class="span2"><label>Actuacion</label><select id="lg-act" onchange="lgActChange()"></select></div>
+        <div><label>Cad. inicial</label><input id="lg-ini" placeholder="0+000" oninput="lgAuto()"></div>
+        <div><label>Cad. final</label><input id="lg-fin" placeholder="0+260" oninput="lgAuto()"></div>
+        <div><label>Volumen</label><input type="number" id="lg-vol" value="0"></div>
+        <div><label>Frente</label><input id="lg-frente" placeholder="F1..."></div>
+      </div>
+      <button class="gbtn green" onclick="lgGuardar()">Guardar avance</button>
+      <div class="msgbox" id="lg-msg"></div>
+    </div>
+    <div class="card">
+      <div class="ctitle">Larguillo visual · PK 0+000 al 1+555</div>
+      <div class="zoom-bar">
+        <span style="font-size:11px;color:#6b7280;font-weight:600">Zoom:</span>
+        <button class="zbtn" onclick="lgZ(-0.2)">-</button>
+        <span class="zpct" id="lg-zpct">100%</span>
+        <button class="zbtn" onclick="lgZ(0.2)">+</button>
+        <button class="zreset" onclick="lgZ(0)">Reset</button>
+      </div>
+      <div class="lg-wrap"><div id="lg-tbl" style="transform-origin:top left;display:inline-block"></div></div>
+      <div class="legend">
+        <span><i class="lbox" style="background:#5b9bd5"></i>Acumulado</span>
+        <span><i class="lbox" style="background:#5b9bd5;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,0) 0,rgba(255,255,255,0) 3px,rgba(255,255,255,.5) 3px,rgba(255,255,255,.5) 6px)"></i>Dia actual</span>
+        <span><i class="lbox" style="background:#fff3cd;outline:1px solid #f59e0b"></i>Pendiente</span>
+        <span><i class="lbox"></i>Sin avance</span>
+      </div>
+    </div>
+    <!-- DIAS NO LABORADOS -->
+    <div class="card">
+      <div class="ctitle">Dias no laborados / Incidencias</div>
+      <div class="g2">
+        <div><label>Fecha</label><input type="date" id="nt-fecha"></div>
+        <div><label>Tipo</label>
+          <select id="nt-tipo">
+            <option value="no_laborado">No laborado</option>
+            <option value="clima">Clima adverso</option>
+            <option value="falla">Falla mecanica</option>
+            <option value="suspension">Suspension de obra</option>
+            <option value="bloqueo">Bloqueo/Conflicto</option>
+            <option value="feriado">Dia festivo</option>
+          </select></div>
+        <div><label>Clima</label>
+          <select id="nt-clima">
+            <option>Soleado</option><option>Nublado</option><option>Lluvia ligera</option><option>Lluvia intensa</option><option>N/A</option>
+          </select></div>
+        <div><label>Afecta avance</label>
+          <select id="nt-afecta"><option value="1">Si</option><option value="0">No</option></select></div>
+        <div class="span2"><label>Notas</label><input id="nt-notas" placeholder="Describe la incidencia..."></div>
+      </div>
+      <button class="gbtn red" onclick="ntGuardar()">Registrar incidencia</button>
+      <div class="msgbox" id="nt-msg"></div>
+      <div id="nt-lista" style="margin-top:10px"></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- PANEL INCIDENCIAS -->
+<div class="overlay" id="panel-incidencias">
+  <div class="overlay-box">
+    <div class="overlay-head">
+      <h3>Incidencias / Dias no laborados (<span id="panel-nt-cnt">0</span>)</h3>
+      <button class="close-btn" onclick="document.getElementById('panel-incidencias').style.display='none'">x</button>
+    </div>
+    <div style="padding:14px;overflow-x:auto"><div id="panel-nt-content"></div></div>
+  </div>
+</div>
+
+<!-- PANEL AVANCES -->
+<div class="overlay" id="panel-avances">
+  <div class="overlay-box">
+    <div class="overlay-head">
+      <h3>Avances registrados (<span id="panel-cnt">0</span>)</h3>
+      <button class="close-btn" onclick="cerrarPanel()">x</button>
+    </div>
+    <div style="padding:14px;overflow-x:auto"><div id="panel-content"></div></div>
+  </div>
+</div>
+
+<!-- REPORTE RD -->
+<div class="screen" id="s-rd">
+  <div class="sbar" style="border-bottom-color:#c94b1a">
+    <button class="back" onclick="volver()">← Atras</button>
+    <span class="stitle">Reporte RD</span>
+    <button class="pdfbtn" onclick="printMod('s-rd')">PDF</button>
+  </div>
+  <div class="content">
+    <div class="card">
+      <div class="ctitle">Nuevo Reporte Diario</div>
+      <div class="g3">
+        <div><label>Fecha</label><input type="date" id="rd-fecha" onchange="rdOnFechaChange()"></div>
+        <div><label>Clima</label><select id="rd-clima"><option>Soleado</option><option>Nublado</option><option>Lluvia ligera</option><option>Lluvia intensa</option><option>Viento fuerte</option></select></div>
+        <div><label>Turno</label><select id="rd-turno"><option>Diurno 06-18h</option><option>Nocturno 18-06h</option></select></div>
+        <div class="span2" style="grid-column:span 3"><label>Observaciones</label><input id="rd-obs" placeholder="Condiciones del dia, incidentes..."></div>
+      </div>
+      <div style="background:#eff6ff;border-radius:6px;padding:7px 10px;font-size:11px;color:#1e40af;margin-bottom:8px">Los avances del larguillo de la fecha seleccionada se pre-cargan automaticamente abajo.</div>
+      <div id="rd-acts-wrap"></div>
+      <button class="gbtn green" onclick="rdGuardar()">Guardar Reporte Diario</button>
+      <div class="msgbox" id="rd-msg"></div>
+    </div>
+    <div class="card"><div class="ctitle">Historial (<span id="rd-hist-cnt">0</span>)</div><div id="rd-hist"></div></div>
+  </div>
+</div>
+
+<!-- PERSONAL -->
+<div class="screen" id="s-personal">
+  <div class="sbar" style="border-bottom-color:#2e6b4f">
+    <button class="back" onclick="volver()">← Atras</button>
+    <span class="stitle">Personal y Asistencia</span>
+    <button class="pdfbtn" onclick="printMod('s-personal')">PDF</button>
+  </div>
+  <div class="content">
+    <div class="card">
+      <div class="ctitle">Agregar trabajador</div>
+      <div class="g2">
+        <div class="span2"><label>Nombre completo</label><input id="p-nombre" placeholder="Apellido Nombre"></div>
+        <div><label>Categoria</label><select id="p-cat"><option>Operador de maquinaria</option><option>Chofer</option><option>Peon</option><option>Topografo</option><option>Supervisor</option><option>Residente</option><option>Responsable SSPA</option><option>Administrativo</option><option>Otro</option></select></div>
+        <div><label>Empresa</label><input id="p-emp" value="XIMA"></div>
+        <div><label>NSS/IMSS</label><input id="p-imss" placeholder="Num. seguro"></div>
+      </div>
+      <button class="gbtn green" onclick="persAgregar()">Agregar trabajador</button>
+      <div class="msgbox" id="p-msg"></div>
+    </div>
+    <div class="card">
+      <div class="ctitle">Asistencia del dia</div>
+      <label>Fecha</label><input type="date" id="p-asist-fecha" style="max-width:160px" oninput="persRenderAsist()">
+      <div id="p-asist-form" style="margin-top:10px"></div>
+      <div id="p-asist-summary" style="background:#f1f5f9;border-radius:6px;padding:8px;font-size:12px;margin:8px 0"></div>
+      <button class="gbtn blue" onclick="persGuardarAsist()">Guardar asistencia</button>
+    </div>
+    <div class="card"><div class="ctitle">Nomina (<span id="p-cnt">0</span>)</div><div id="p-lista"></div></div>
+    <div class="card"><div class="ctitle">Historial asistencia</div><div id="p-hist"></div></div>
+  </div>
+</div>
+
+<!-- EQUIPOS -->
+<div class="screen" id="s-equipos">
+  <div class="sbar" style="border-bottom-color:#e8a000">
+    <button class="back" onclick="volver()">← Atras</button>
+    <span class="stitle">Equipos y Maquinaria</span>
+    <button class="pdfbtn" onclick="printMod('s-equipos')">PDF</button>
+  </div>
+  <div class="content">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">
+      <div class="card" style="margin:0;border-left:4px solid #e8a000"><div style="font-size:9px;color:#6b7280;text-transform:uppercase">Equipos</div><div style="font-size:22px;font-weight:900;color:#e8a000" id="eq-kpi1">0</div></div>
+      <div class="card" style="margin:0;border-left:4px solid #1c2b4a"><div style="font-size:9px;color:#6b7280;text-transform:uppercase">Horas</div><div style="font-size:22px;font-weight:900;color:#1c2b4a" id="eq-kpi2">0</div></div>
+      <div class="card" style="margin:0;border-left:4px solid #ea580c"><div style="font-size:9px;color:#6b7280;text-transform:uppercase">Litros</div><div style="font-size:22px;font-weight:900;color:#ea580c" id="eq-kpi3">0</div></div>
+    </div>
+    <div class="card">
+      <div class="ctitle">Agregar equipo</div>
+      <div class="g2">
+        <div class="span2"><label>Tipo</label><select id="eq-tipo"><option>Motoconformadora</option><option>Bulldozer</option><option>Retroexcavadora</option><option>Compactador vibratorio</option><option>Pipa de agua</option><option>Camion de volteo</option><option>Camioneta 4x4</option><option>Grua movil</option><option>Generador</option><option>Otro</option></select></div>
+        <div><label>Marca</label><input id="eq-marca" placeholder="CAT, Komatsu..."></div>
+        <div><label>Modelo</label><input id="eq-modelo" placeholder="140M..."></div>
+        <div><label>Placa/No.Eco.</label><input id="eq-placa" placeholder="ABC-1234"></div>
+        <div><label>Capacidad</label><input id="eq-cap" placeholder="14 M3..."></div>
+      </div>
+      <button class="gbtn green" onclick="eqAgregar()">Agregar equipo</button>
+    </div>
+    <div class="card">
+      <div class="ctitle">Registrar diesel</div>
+      <div class="g2">
+        <div><label>Fecha</label><input type="date" id="dsl-fecha"></div>
+        <div><label>Equipo</label><select id="dsl-eq"><option value="">Seleccionar</option></select></div>
+        <div><label>Litros</label><input type="number" id="dsl-litros" placeholder="0"></div>
+        <div><label>Horometro</label><input id="dsl-horo" placeholder="4520 hrs"></div>
+        <div><label>Vale/Folio</label><input id="dsl-vale" placeholder="D-0045"></div>
+        <div><label>Proveedor</label><input id="dsl-prov" placeholder="Pipa..."></div>
+      </div>
+      <button class="gbtn green" onclick="dslGuardar()">Guardar diesel</button>
+      <div class="msgbox" id="dsl-msg"></div>
+    </div>
+    <div class="card">
+      <div class="ctitle">Registrar horas</div>
+      <div class="g2">
+        <div><label>Fecha</label><input type="date" id="hrs-fecha"></div>
+        <div><label>Equipo</label><select id="hrs-eq"><option value="">Seleccionar</option></select></div>
+        <div><label>Horas</label><input type="number" id="hrs-horas" step="0.5" placeholder="8"></div>
+        <div><label>Actividad</label><select id="hrs-act"><option>Conformacion terraplen</option><option>Corte y excavacion</option><option>Desmonte y despalme</option><option>Extendido de base</option><option>Compactacion</option><option>Acarreo</option><option>Traslado</option><option>Otro</option></select></div>
+        <div class="span2"><label>Obs / Falla</label><input id="hrs-obs" placeholder="Zona de trabajo, fallas..."></div>
+      </div>
+      <button class="gbtn green" onclick="hrsGuardar()">Guardar horas</button>
+      <div class="msgbox" id="hrs-msg"></div>
+    </div>
+    <div class="card"><div class="ctitle">Flota</div><div id="eq-lista"></div></div>
+    <div class="card"><div id="dsl-concentrado"></div></div>
+    <div class="card"><div class="ctitle">Ultimas horas</div><div id="hrs-lista"></div></div>
+  </div>
+</div>
+
+<!-- MATERIALES -->
+<div class="screen" id="s-materiales">
+  <div class="sbar" style="border-bottom-color:#7c3aed">
+    <button class="back" onclick="volver()">← Atras</button>
+    <span class="stitle">Materiales y Consumos</span>
+    <button class="pdfbtn" onclick="printMod('s-materiales')">PDF</button>
+  </div>
+  <div class="content">
+    <div class="card"><div class="ctitle">Inventario vs Programado</div><div id="mat-inv"></div></div>
+    <div class="card">
+      <div class="ctitle">Registrar movimiento</div>
+      <div class="g2">
+        <div><label>Fecha</label><input type="date" id="mat-fecha"></div>
+        <div><label>Tipo</label><select id="mat-tipo"><option value="entrada">Entrada</option><option value="consumo">Consumo</option></select></div>
+        <div class="span2"><label>Material</label><select id="mat-sel"></select></div>
+        <div><label>Cantidad</label><input type="number" id="mat-cant" placeholder="0"></div>
+        <div><label>Origen/Destino</label><input id="mat-origen" placeholder="Banco, PK..."></div>
+      </div>
+      <button class="gbtn green" onclick="matGuardar()">Guardar movimiento</button>
+      <div class="msgbox" id="mat-msg"></div>
+    </div>
+    <div class="card"><div class="ctitle">Ultimos movimientos</div><div id="mat-movs"></div></div>
+  </div>
+</div>
+
+<!-- ACARREOS -->
+<div class="screen" id="s-acarreos">
+  <div class="sbar" style="border-bottom-color:#0891b2">
+    <button class="back" onclick="volver()">← Atras</button>
+    <span class="stitle">Acarreos OC 6559</span>
+    <button class="pdfbtn" onclick="printMod('s-acarreos')">PDF</button>
+  </div>
+  <div class="content">
+    <div id="acar-kpis" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px"></div>
+
+    <!-- IMPORTAR EXCEL -->
+    <div class="card">
+      <div class="ctitle">Importar Excel de acarreos</div>
+      <p style="font-size:11px;color:#6b7280;margin-bottom:10px">Selecciona tu archivo Excel (.xlsx o .csv). Las columnas deben tener: fecha, empresa, placas, banco, cap, material, clasif</p>
+      <input type="file" id="ac-excel-file" accept=".xlsx,.xls,.csv" style="display:none" onchange="acImportarExcel(this)">
+      <button onclick="document.getElementById('ac-excel-file').click()" style="width:100%;padding:11px;background:#0891b2;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:Arial,sans-serif">📊 Importar Excel / CSV</button>
+      <div class="msgbox" id="ac-import-msg"></div>
+      <div id="ac-import-preview" style="margin-top:10px"></div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle">Agregar viaje manual</div>
+      <div class="g2">
+        <div><label>Fecha</label><input type="date" id="ac-fecha"></div>
+        <div><label>Empresa</label><select id="ac-emp"><option>XIMA</option><option>UNIÓN REFORMA</option></select></div>
+        <div><label>Placas</label><input id="ac-placas" placeholder="65BK-3H"></div>
+        <div><label>Banco/Origen</label><input id="ac-banco" placeholder="SAMARIA I"></div>
+        <div><label>M3</label><input type="number" id="ac-cap" placeholder="30"></div>
+        <div><label>Material</label><select id="ac-mat"><option>ARENA</option><option>REVESTIMIENTO</option><option>TEPETATE</option></select></div>
+        <div><label>Clasificacion</label><select id="ac-clasif"><option>ENTRADA</option><option>SALIDA</option></select></div>
+        <div><label>Req./Folio</label><input id="ac-req" placeholder="C.D.-003/26"></div>
+      </div>
+      <button class="gbtn green" onclick="acAgregar()">Agregar viaje</button>
+      <div class="msgbox" id="ac-msg"></div>
+    </div>
+    <div class="card">
+      <div class="ctitle">Filtros</div>
+      <div class="g2">
+        <div><label>Empresa</label><select id="ac-filt-emp" onchange="acRender()"><option value="">Todas</option><option>XIMA</option><option>UNIÓN REFORMA</option></select></div>
+        <div><label>Material</label><select id="ac-filt-mat" onchange="acRender()"><option value="">Todos</option><option>ARENA</option><option>REVESTIMIENTO</option></select></div>
+        <div><label>Clasificacion</label><select id="ac-filt-clasif" onchange="acRender()"><option value="">Todas</option><option>ENTRADA</option><option>SALIDA</option></select></div>
+        <div><label>Banco/Almacen</label><select id="ac-filt-banco" onchange="acRender()"><option value="">Todos</option></select></div>
+      </div>
+    </div>
+    <div class="card"><div class="ctitle">M3 por dia</div><div id="ac-dias"></div></div>
+    <div class="card"><div class="ctitle">Por empresa</div><div id="ac-emp-res"></div></div>
+    <div class="card"><div class="ctitle">Detalle</div><div style="overflow-x:auto"><table><thead><tr><th>No.</th><th>Fecha</th><th>Empresa</th><th>Placas</th><th>Eco.</th><th>Banco/Almacen</th><th>M3</th><th>Material</th><th>Clasif.</th><th>Req.</th></tr></thead><tbody id="ac-tbody"></tbody></table></div></div>
+  </div>
+</div>
+
+<!-- DOCUMENTOS -->
+<div class="screen" id="s-documentos">
+  <div class="sbar" style="border-bottom-color:#1a5fa8">
+    <button class="back" onclick="volver()">← Atras</button>
+    <span class="stitle">Documentos del Proyecto</span>
+    <button class="pdfbtn" onclick="printMod('s-documentos')">PDF</button>
+  </div>
+  <div class="content">
+    <div class="card">
+      <div class="ctitle">Agregar documento</div>
+      <div class="g2">
+        <div class="span2"><label>Tipo</label><select id="dc-tipo"><option>Plano de ingenieria</option><option>Orden de compra</option><option>Permiso ambiental</option><option>Permiso CONAGUA</option><option>Procedimiento constructivo</option><option>Certificado de calidad</option><option>Dossier de calidad</option><option>Fianza</option><option>Contrato</option><option>Otro</option></select></div>
+        <div class="span2"><label>Nombre</label><input id="dc-nombre" placeholder="Nombre del documento"></div>
+        <div><label>Folio</label><input id="dc-folio" placeholder="OC-001"></div>
+        <div><label>Fecha emision</label><input type="date" id="dc-fecha"></div>
+        <div class="span2"><label>Vencimiento (opcional)</label><input type="date" id="dc-vence"></div>
+      </div>
+      <button class="gbtn green" onclick="dcAgregar()">Guardar documento</button>
+      <div class="msgbox" id="dc-msg"></div>
+    </div>
+    <div class="card"><div class="ctitle">Registro</div><div id="dc-lista"></div></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script>
+// ══════════════════════════════════════════════
+// RogMay Control FIELD MANAGER v4.0 · OC 6559
+// ══════════════════════════════════════════════
+
+// SUPABASE
+var SB_URL='https://uzpgkpanepgvwlidqmlw.supabase.co';
+var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6cGdrcGFuZXBndndsaWRxbWx3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MjgxMDQsImV4cCI6MjA5NTUwNDEwNH0.UCK4Ez0qflxVC37rziCjgBMx9zAHULZrUjun2VdRpB8';
+function sbSave(table,body){fetch(SB_URL+'/rest/v1/'+table,{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'},body:JSON.stringify(body)}).then(function(r){return r.json();}).then(function(d){return d;}).catch(function(){});}
+function sbLoad(table,params,cb){fetch(SB_URL+'/rest/v1/'+table+(params||''),{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}}).then(function(r){return r.json();}).then(function(d){if(cb)cb(d||[]);}).catch(function(){if(cb)cb([]);});}
+function sbDel(table,params){fetch(SB_URL+'/rest/v1/'+table+(params||''),{method:'DELETE',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}}).catch(function(){});}
+
+// DATA
+var AVANCES=[], NT_ROWS=[], PERSONAL=[], ASISTENCIA=[], EQUIPOS=[], HORAS=[], DIESEL=[];
+var RDS=[], MOVIMIENTOS=[], DOCUMENTOS_EXTRA=[];
+
+// ACTS
+var ACTS=[
+  {name:'LEVANTAMIENTO TOPOGRAFICO INICIAL',unit:'ML',color:'#5b9bd5'},
+  {name:'LEVANTAMIENTO DE DETECTADO',unit:'ML',color:'#70ad47'},
+  {name:'DESMONTE DEL TERRENO (PASTIZAL)',unit:'M2',color:'#ed7d31'},
+  {name:'TALA DE ARBOLES',unit:'PZA',color:'#00b0f0'},
+  {name:'CORTE Y/O EXCAVACION DEL TERRENO',unit:'M3',color:'#e00000'},
+  {name:'CONFORMACION DE TERRAPLEN',unit:'M3',color:'#d4872c'},
+  {name:'BASE - GRAVA 1.5" A FINOS',unit:'M3',color:'#2e8b57'},
+  {name:'PROTECCION DE TALUDES (ARROPE)',unit:'M3',color:'#b8a000'},
+  {name:'INSTALACION DE GEOTEXTIL NO TEJIDO',unit:'M2',color:'#4472c4'},
+  {name:'INSTALACION DE GEOMALLA TRIAXIAL TX-160',unit:'M2',color:'#767171'},
+  {name:'FALSETE DE ALAMBRE DE PUAS',unit:'ML',color:'#ff6b35'}
+];
+
+var STATIONS=[];
+for(var _i=0;_i<=1540;_i+=20)STATIONS.push(_i);
+STATIONS.push(1555);
+
+var MAT_BASE=[
+  {id:'m1',nombre:'Arena/Material banco (Terraplen)',unidad:'M3',prog:5710.75},
+  {id:'m2',nombre:'Grava 1.5" a finos (Base)',unidad:'M3',prog:1192.37},
+  {id:'m3',nombre:'Geotextil no tejido',unidad:'M2',prog:9841.33},
+  {id:'m4',nombre:'Geomalla TX-160',unidad:'M2',prog:9300},
+  {id:'m5',nombre:'Alambre de puas',unidad:'ML',prog:1555.09}
+];
+
+var DOCS_BASE=[
+  {tipo:'Plano',nombre:'PERFIL DE TERRENO NATURAL',folio:'D-SG-OS-088803-E-117',fecha:'2026-03-01'},
+  {tipo:'Plano',nombre:'PLANTA DE TERRENO NATURAL',folio:'D-SG-OS-088803-E-117',fecha:'2026-03-01'},
+  {tipo:'OC',nombre:'ORDEN DE COMPRA 6559',folio:'OC-6559',fecha:'2026-03-24',vence:'2026-06-12'},
+  {tipo:'Req.',nombre:'REQUISICION 52970',folio:'REQ-52970',fecha:'2025-10-17'}
+];
+
+// HELPERS
+function today(){return new Date().toISOString().slice(0,10);}
+function fmtD(d){if(!d)return'';var p=d.split('-');return p[2]+'/'+p[1]+'/'+p[0];}
+function parseCad(v){
+  var s=String(v||'').trim();
+  var m=s.match(/^(\d+)\+(\d+)$/);if(m)return +m[1]*1000+ +m[2];
+  var n=+s;if(!isNaN(n)&&n>=0)return n;
+  return 0;
+}
+function fmtCad(n){return Math.floor(n/1000)+'+'+String(n%1000).padStart(3,'0');}
+function msg(id,txt,ok){var el=document.getElementById(id);if(!el)return;el.textContent=txt;el.className='msgbox '+(ok?'ok':'err');setTimeout(function(){el.className='msgbox';},4000);}
+
+// NAVIGATION - simple and direct
+function ir(id){
+  document.getElementById('dashboard').style.display='none';
+  document.getElementById('s-'+id).style.display='block';
+  window.scrollTo(0,0);
+  if(id==='larguillo')lgInit();
+  else if(id==='rd')rdInit();
+  else if(id==='personal')persInit();
+  else if(id==='equipos')eqInit();
+  else if(id==='materiales')matInit();
+  else if(id==='acarreos')acInit();
+  else if(id==='documentos')dcInit();
+}
+function volver(){
+  var screens=document.querySelectorAll('.screen');
+  for(var i=0;i<screens.length;i++)screens[i].style.display='none';
+  document.getElementById('dashboard').style.display='block';
+  window.scrollTo(0,0);
+}
+
+// ══════════════════
+// LARGUILLO
+// ══════════════════
+var _lgScale=1;
+function lgZ(d){
+  if(d===0){_lgScale=1;}else{_lgScale=Math.min(3,Math.max(0.3,_lgScale+d));}
+  var el=document.getElementById('lg-tbl');if(el)el.style.transform='scale('+_lgScale+')';
+  var p=document.getElementById('lg-zpct');if(p)p.textContent=Math.round(_lgScale*100)+'%';
+}
+
+function lgInit(){
+  document.getElementById('lg-fecha').value=today();
+  document.getElementById('nt-fecha').value=today();
+  var sel=document.getElementById('lg-act');
+  sel.innerHTML=ACTS.map(function(a){return'<option>'+a.name+'</option>';}).join('');
+  lgActChange();lgRender();
+  sbLoad('sfm_avances','?order=created_at.asc',function(d){
+    if(d&&d.length){
+      AVANCES=d.map(function(r){return{_id:r.id,fecha:r.fecha,actuacion:r.actuacion,unidad:r.unidad||'',frente:r.frente||'',volumen:+r.volumen||0,ini:r.ini,fin:r.fin};});
+      lgRender();
+    }
+  });
+  // Load NT from IDB first (instant), then refresh from Supabase
+  idbGet('nt',function(cached){
+    if(cached&&cached.length){
+      NT_ROWS=cached;ntRender();
+      var nc=document.getElementById('nt-cnt');if(nc)nc.textContent=NT_ROWS.length;
+    }
+    sbLoad('sfm_no_trabajados','?order=fecha.desc',function(d){
+      if(d&&d.length&&d.length>=NT_ROWS.length){
+        NT_ROWS=d;idbSet('nt',NT_ROWS);ntRender();
+        var nc=document.getElementById('nt-cnt');if(nc)nc.textContent=NT_ROWS.length;
+      }
+    });
+  });
+}
+
+function lgActChange(){
+  var act=document.getElementById('lg-act').value;
+  var a=ACTS.find(function(x){return x.name===act;});
+  document.getElementById('lg-unidad').value=a?a.unit:'';
+}
+
+function lgAuto(){
+  var a=parseCad(document.getElementById('lg-ini').value);
+  var b=parseCad(document.getElementById('lg-fin').value);
+  if(b>a)document.getElementById('lg-vol').value=b-a;
+}
+
+function lgGuardar(){
+  var ini=document.getElementById('lg-ini').value;
+  var fin=document.getElementById('lg-fin').value;
+  if(!ini||!fin){msg('lg-msg','Completa los cadenamientos',false);return;}
+  var rec={fecha:document.getElementById('lg-fecha').value||today(),actuacion:document.getElementById('lg-act').value,unidad:document.getElementById('lg-unidad').value,frente:document.getElementById('lg-frente').value,volumen:+document.getElementById('lg-vol').value||0,ini:ini,fin:fin,longitud:parseCad(fin)-parseCad(ini)};
+  AVANCES.push(rec);
+  document.getElementById('lg-ini').value='';document.getElementById('lg-fin').value='';document.getElementById('lg-vol').value='0';document.getElementById('lg-frente').value='';
+  lgRender();idbSaveAll();msg('lg-msg','Guardado · '+AVANCES.length+' registros',true);
+  sbSave('sfm_avances',rec);
+}
+
+function lgCellState(act,st){
+  var hits=AVANCES.filter(function(r){
+    if(r.actuacion!==act)return false;
+    var a=parseCad(r.ini),b=parseCad(r.fin);
+    var last=-1;for(var i=0;i<STATIONS.length;i++){if(STATIONS[i]<=b)last=STATIONS[i];else break;}
+    return a<=st&&st<=last;
+  });
+  if(!hits.length){
+    var all=AVANCES.filter(function(r){return r.actuacion===act;});
+    if(all.length){
+      var mn=Math.min.apply(null,all.map(function(r){return parseCad(r.ini);}));
+      var mx=Math.max.apply(null,all.map(function(r){return parseCad(r.fin);}));
+      var lc=-1;for(var i=0;i<STATIONS.length;i++){if(STATIONS[i]<=mx)lc=STATIONS[i];else break;}
+      if(st>=mn&&st<=lc)return'pend';
+    }
+    return'empty';
+  }
+  // Detect if hits are from today (cur), prev days (acc), or both (mix)
+  var latest=hits.reduce(function(m,r){return(r.fecha||'')>m?r.fecha:m;},'');
+  var hasPrev=hits.some(function(h){return h.fecha!==latest;});
+  var hasCurr=hits.some(function(h){return h.fecha===latest;});
+  if(hasPrev&&hasCurr)return'mix';
+  if(hasPrev)return'acc';
+  return'cur';
+}
+
+
+
+// ── PRINT MODULE ──
+function printMod(screenId){
+  var screen = document.getElementById(screenId);
+  if(!screen) return;
+  // Get innerHTML of the screen
+  var content = screen.innerHTML;
+  var win = window.open('','_blank','width=1000,height=800');
+  win.document.write('<!DOCTYPE html><html><head><meta charset="utf-8">');
+  win.document.write('<title>RogMay Control · OC 6559</title>');
+  win.document.write('<style>');
+  win.document.write('*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}');
+  win.document.write('body{background:#fff;padding:16px;font-size:12px;color:#1c2b4a}');
+  win.document.write('.sbar{background:#1c2b4a;color:#fff;padding:10px 14px;border-radius:6px;margin-bottom:12px;display:flex;align-items:center;gap:10px}');
+  win.document.write('.stitle{font-size:14px;font-weight:700;color:#fff}');
+  win.document.write('.back,.pdfbtn{display:none}');
+  win.document.write('.card{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin-bottom:12px;break-inside:avoid}');
+  win.document.write('.ctitle{font-size:12px;font-weight:700;color:#1c2b4a;margin-bottom:8px;border-bottom:1px solid #e2e8f0;padding-bottom:6px}');
+  win.document.write('table{width:100%;border-collapse:collapse;font-size:11px}');
+  win.document.write('th{background:#f1f5f9;padding:5px 6px;text-align:left;border-bottom:2px solid #e2e8f0;font-size:10px}');
+  win.document.write('td{padding:4px 6px;border-bottom:1px solid #f1f5f9}');
+  win.document.write('input,select{display:none}');
+  win.document.write('label{display:none}');
+  win.document.write('.gbtn,.zoom-bar,.msgbox{display:none}');
+  win.document.write('.lg-wrap{overflow:visible}');
+  win.document.write('.lg-tbl{font-size:6px}');
+  win.document.write('.lg-cell{width:10px;min-width:10px;height:12px}');
+  win.document.write('.lg-act{font-size:6px;width:50px;min-width:50px}');
+  win.document.write('.lg-pk{width:10px;height:28px;font-size:5px}');
+  win.document.write('.overlay{display:none}');
+  win.document.write('.chip{display:inline-block;padding:1px 4px;border-radius:3px;font-size:9px;font-weight:700}');
+  win.document.write('.empty{text-align:center;padding:16px;color:#9ca3af;font-size:11px}');
+  win.document.write('@page{size:landscape;margin:10mm}');
+  win.document.write('</style></head><body>');
+  // Add header
+  win.document.write('<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;margin-bottom:12px;border-bottom:3px solid #c94b1a">');
+  win.document.write('<div><div style="font-size:18px;font-weight:900;color:#1c2b4a;letter-spacing:2px">RogMay <span style="color:#c94b1a">Control</span></div>');
+  win.document.write('<div style="font-size:10px;color:#6b7280">OC 6559 · CAMINO A PERA 938M · REFORMA, CHIAPAS</div></div>');
+  win.document.write('<div style="text-align:right;font-size:10px;color:#6b7280">Impreso: '+new Date().toLocaleString('es-MX')+'</div>');
+  win.document.write('</div>');
+  win.document.write(content);
+  win.document.write('</body></html>');
+  win.document.close();
+  win.focus();
+  setTimeout(function(){ win.print(); }, 800);
+}
+
+// Check if two adjacent stations are covered by the SAME avance (no gap between them)
+function lgContinuous(act, st, nextSt){
+  return AVANCES.some(function(r){
+    if(r.actuacion!==act)return false;
+    var a=parseCad(r.ini), b=parseCad(r.fin);
+    var last=-1;for(var i=0;i<STATIONS.length;i++){if(STATIONS[i]<=b)last=STATIONS[i];else break;}
+    return a<=st&&st<=last && a<=nextSt&&nextSt<=last;
+  });
+}
+
+function lgRender(){
+  var cnt=document.getElementById('lg-cnt');if(cnt)cnt.textContent=AVANCES.length;
+  var wrap=document.getElementById('lg-tbl');if(!wrap)return;
+  // Pre-build executed station sets per act for accuracy
+  var execSets={};
+  ACTS.forEach(function(act){
+    var s=new Set();
+    AVANCES.filter(function(r){return r.actuacion===act.name;}).forEach(function(r){
+      var a=parseCad(r.ini),b=parseCad(r.fin);
+      STATIONS.forEach(function(st){
+        var last=-1;for(var i=0;i<STATIONS.length;i++){if(STATIONS[i]<=b)last=STATIONS[i];else break;}
+        if(a<=st&&st<=last)s.add(st);
+      });
+    });
+    execSets[act.name]=s;
+  });
+  var html='<table class="lg-tbl"><tbody>';
+  ACTS.forEach(function(act){
+    var execSet=execSets[act.name]||new Set();
+    html+='<tr><td class="lg-act" style="background:'+act.color+'">'+act.name.slice(0,18)+'</td>';
+    STATIONS.forEach(function(st,si){
+      var s=lgCellState(act.name,st);
+      // Override with execSet for accuracy
+      var isExec=execSet.has(st);
+      if(isExec){
+        // Check if it's today's date or older
+        var hitsForSt=AVANCES.filter(function(r){
+          if(r.actuacion!==act.name)return false;
+          var a=parseCad(r.ini),b=parseCad(r.fin);
+          var last=-1;for(var i=0;i<STATIONS.length;i++){if(STATIONS[i]<=b)last=STATIONS[i];else break;}
+          return a<=st&&st<=last;
+        });
+        var latest=hitsForSt.reduce(function(m,r){return(r.fecha||'')>m?r.fecha:m;},'');
+        var hasPrev=hitsForSt.some(function(h){return h.fecha!==latest;});
+        var hasCurr=hitsForSt.some(function(h){return h.fecha===latest;});
+        s=hasPrev&&hasCurr?'mix':hasPrev?'acc':'cur';
+      } else {
+        // Check if within range of any avance (pend) or completely untouched
+        var allRanges=AVANCES.filter(function(r){return r.actuacion===act.name;});
+        if(allRanges.length&&execSet.size>0){
+          var mn=Math.min.apply(null,Array.from(execSet));
+          var mx=Math.max.apply(null,Array.from(execSet));
+          s=(st>=mn&&st<=mx)?'pend':'empty';
+        } else {
+          s='empty';
+        }
+      }
+      var isColor=s==='acc'||s==='cur'||s==='mix';
+      var bg2=isColor?act.color:s==='pend'?'#fff3cd':'#fff';
+      var stripe=(s==='cur'||s==='mix')?'background-image:repeating-linear-gradient(45deg,rgba(255,255,255,0) 0,rgba(255,255,255,0) 3px,rgba(255,255,255,.5) 3px,rgba(255,255,255,.5) 6px);':'';
+      var pend2=s==='pend'?'background-image:repeating-linear-gradient(45deg,#fff3cd 0,#fff3cd 3px,#ffe082 3px,#ffe082 6px);outline:1px solid #f59e0b;':'';
+      // Gap divider: red right border when next station is executed but NOT continuous
+      var gap='';
+      if(isColor&&si+1<STATIONS.length){
+        var nextSt2=STATIONS[si+1];
+        if(execSet.has(nextSt2)&&!lgContinuous(act.name,st,nextSt2)){
+          gap='border-right:3px solid #dc2626;';
+        } else if(!execSet.has(nextSt2)){
+          gap='border-right:2px solid #dc2626;';
+        }
+      }
+      // Red LEFT border when prev station is executed but NOT continuous
+      var gapL='';
+      if(isColor&&si>0){
+        var prevSt=STATIONS[si-1];
+        if(execSet.has(prevSt)&&!lgContinuous(act.name,prevSt,st)){
+          gapL='border-left:3px solid #dc2626;';
+        } else if(!execSet.has(prevSt)){
+          gapL='border-left:2px solid #dc2626;';
+        }
+      }
+      var click=isColor?('onclick="lgTap(\'' + act.name.replace(/'/g,"\'").replace(/"/g,'&quot;') + '\',' + st + ')" style="cursor:pointer;'):'style="';
+      html+='<td class="lg-cell" '+click+'background-color:'+bg2+';'+stripe+pend2+gap+gapL+'"></td>';
+    });
+    html+='</tr>';
+  });
+  html+='<tr><td class="lg-act" style="background:#1c2b4a;text-align:center;font-size:7px">CADENAMIENTO</td>';
+  STATIONS.forEach(function(st){
+    var bold=st%100===0||st===1555;
+    html+='<td class="lg-pk" style="background:'+(bold?'#dbeafe':'#f8fafc')+';color:'+(bold?'#1e40af':'#94a3b8')+';font-weight:'+(bold?'700':'400')+'">'+fmtCad(st)+'</td>';
+  });
+  html+='</tr></tbody></table>';
+  wrap.innerHTML=html;
+}
+
+function lgTap(act,st){
+  var hits=AVANCES.filter(function(r){
+    if(r.actuacion!==act)return false;
+    var a=parseCad(r.ini),b=parseCad(r.fin);
+    var last=-1;for(var i=0;i<STATIONS.length;i++){if(STATIONS[i]<=b)last=STATIONS[i];else break;}
+    return a<=st&&st<=last;
+  });
+  if(!hits.length)return;
+  var color=(ACTS.find(function(a){return a.name===act;})||{}).color||'#1c2b4a';
+  var div=document.createElement('div');
+  div.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
+  div.onclick=function(){document.body.removeChild(div);};
+  var box=document.createElement('div');
+  box.style.cssText='background:#fff;border-radius:12px;padding:16px;max-width:380px;width:100%';
+  box.onclick=function(e){e.stopPropagation();};
+  var h='<div style="background:'+color+';color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px;margin-bottom:8px;display:inline-block">'+act+'</div>';
+  h+='<div style="font-size:13px;font-weight:700;color:#1c2b4a;margin-bottom:10px">Cadenamiento '+fmtCad(st)+'</div>';
+  h+='<table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="background:#f1f5f9"><th style="padding:6px;text-align:left">Fecha</th><th style="padding:6px;text-align:left">Ini</th><th style="padding:6px;text-align:left">Fin</th><th style="padding:6px;text-align:left">Vol.</th></tr></thead><tbody>';
+  hits.forEach(function(r){h+='<tr style="border-bottom:1px solid #f1f5f9"><td style="padding:5px 6px"><b>'+fmtD(r.fecha)+'</b></td><td>'+r.ini+'</td><td>'+r.fin+'</td><td><b>'+r.volumen+'</b></td></tr>';});
+  h+='</tbody></table><button onclick="document.body.removeChild(this.closest(\'[style*=fixed]\'))" style="width:100%;padding:10px;background:#1c2b4a;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;margin-top:12px;font-family:Arial,sans-serif">Cerrar</button>';
+  box.innerHTML=h;div.appendChild(box);document.body.appendChild(div);
+}
+
+
+function verIncidencias(){
+  var panel=document.getElementById('panel-incidencias');
+  panel.style.display='block';
+  // Load from IDB if empty, then render
+  if(!NT_ROWS.length){
+    idbGet('nt',function(loaded){
+      if(loaded&&loaded.length) NT_ROWS=loaded;
+      _renderIncidencias();
+    });
+  } else {
+    _renderIncidencias();
+  }
+}
+function _renderIncidencias(){
+  document.getElementById('panel-nt-cnt').textContent=NT_ROWS.length;
+  if(!NT_ROWS.length){document.getElementById('panel-nt-content').innerHTML='<div class="empty">Sin incidencias registradas</div>';return;}
+  var TIPOS={no_laborado:'No laborado',clima:'Clima adverso',falla:'Falla mecanica',suspension:'Suspension',bloqueo:'Bloqueo',feriado:'Festivo'};
+  var h='<table><thead><tr><th>Fecha</th><th>Tipo</th><th>Clima</th><th>Afecta</th><th>Notas</th></tr></thead><tbody>';
+  NT_ROWS.forEach(function(r){
+    h+='<tr><td><b>'+fmtD(r.fecha)+'</b></td><td>'+(TIPOS[r.motivo]||r.motivo)+'</td><td>'+(r.clima||'')+'</td><td>'+(r.afecta?'<b style="color:#dc2626">Si</b>':'No')+'</td><td style="font-size:11px">'+(r.comentario||'')+'</td></tr>';
+  });
+  h+='</tbody></table>';
+  document.getElementById('panel-nt-content').innerHTML=h;
+}
+
+function verAvances(){
+  var panel=document.getElementById('panel-avances');
+  panel.style.display='block';
+  document.getElementById('panel-cnt').textContent=AVANCES.length;
+  if(!AVANCES.length){document.getElementById('panel-content').innerHTML='<div class="empty">Sin avances</div>';return;}
+  var byAct={};
+  AVANCES.forEach(function(r){
+    if(!byAct[r.actuacion])byAct[r.actuacion]={n:0,vol:0,ranges:[]};
+    byAct[r.actuacion].n++;
+    byAct[r.actuacion].vol+=+r.volumen||0;
+    byAct[r.actuacion].ranges.push({ini:parseCad(r.ini),fin:parseCad(r.fin)});
+  });
+  // Build executed set per act
+  function getExecutedStations(ranges){
+    var s=new Set();
+    ranges.forEach(function(rng){
+      var b=rng.fin;
+      var last=-1;for(var i=0;i<STATIONS.length;i++){if(STATIONS[i]<=b)last=STATIONS[i];else break;}
+      STATIONS.forEach(function(st){
+        if(rng.ini<=st&&st<=last)s.add(st);
+      });
+    });
+    return s;
+  }
+  var h='<div style="margin-bottom:14px">';
+  Object.keys(byAct).forEach(function(act){
+    var d=byAct[act];var c=(ACTS.find(function(a){return a.name===act;})||{}).color||'#1c2b4a';
+    var exec=getExecutedStations(d.ranges);
+    // Find gaps: stations between min and max that are NOT executed
+    if(exec.size>0){
+      var mn=Math.min.apply(null,Array.from(exec));
+      var mx=Math.max.apply(null,Array.from(exec));
+      // Find unexecuted stations within range
+      var gaps=STATIONS.filter(function(st){return st>=mn&&st<=mx&&!exec.has(st);});
+      // Find discontinuities between adjacent executed stations
+      var jumps=[];
+      var execArr=Array.from(exec).sort(function(a,b){return a-b;});
+      for(var gi=0;gi<execArr.length-1;gi++){
+        var cur=execArr[gi], nxt=execArr[gi+1];
+        var idx2=STATIONS.indexOf(cur);
+        if(idx2>=0&&STATIONS[idx2+1]===nxt){
+          // Adjacent stations - check if covered by same avance
+          var cont=AVANCES.some(function(r){
+            if(r.actuacion!==act)return false;
+            var a2=parseCad(r.ini),b2=parseCad(r.fin);
+            var last2=-1;for(var i2=0;i2<STATIONS.length;i2++){if(STATIONS[i2]<=b2)last2=STATIONS[i2];else break;}
+            return a2<=cur&&cur<=last2&&a2<=nxt&&nxt<=last2;
+          });
+          if(!cont) jumps.push(fmtCad(cur)+' / '+fmtCad(nxt));
+        }
+      }
+      h+='<div style="background:#f8fafc;border-radius:8px;padding:10px;border-left:4px solid '+c+';margin-bottom:8px">';
+      h+='<div style="font-size:11px;font-weight:700">'+act+'</div>';
+      h+='<div style="font-size:11px;color:#6b7280;margin-top:2px">'+d.n+' reg · '+d.vol.toLocaleString()+' | Rango: '+fmtCad(mn)+' — '+fmtCad(mx)+'</div>';
+      if(gaps.length){
+        h+='<div style="margin-top:6px;background:#fff3cd;border:1px solid #fbbf24;border-radius:5px;padding:6px 8px;font-size:11px">';
+        h+='<b style="color:#92400e">⚠ Cadenamientos sin ejecutar ('+gaps.length+'):</b><br>';
+        h+='<span style="color:#92400e;font-family:monospace">'+gaps.map(fmtCad).join(' · ')+'</span>';
+        h+='</div>';
+      }
+      if(jumps.length){
+        h+='<div style="margin-top:6px;background:#fee2e2;border:1px solid #fca5a5;border-radius:5px;padding:6px 8px;font-size:11px">';
+        h+='<b style="color:#dc2626">🔴 Huecos entre avances no contiguos ('+jumps.length+'):</b><br>';
+        h+='<span style="color:#dc2626;font-family:monospace">'+jumps.join(' · ')+'</span>';
+        h+='</div>';
+      }
+      if(!gaps.length&&!jumps.length){
+        h+='<div style="margin-top:4px;font-size:10px;color:#16a34a;font-weight:700">✓ Sin huecos en el rango ejecutado</div>';
+      }
+      h+='</div>';
+    }
+  });
+  h+='</div><table><thead><tr><th>Fecha</th><th>Actuacion</th><th>Ini</th><th>Fin</th><th>Vol.</th><th></th></tr></thead><tbody>';
+  AVANCES.forEach(function(r,i){
+    h+='<tr><td><b>'+fmtD(r.fecha)+'</b></td><td style="font-size:11px">'+r.actuacion.slice(0,20)+'</td><td>'+r.ini+'</td><td>'+r.fin+'</td><td><b>'+r.volumen+'</b></td><td><button onclick="lgBorrar('+i+')" style="background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:4px;padding:2px 8px;font-size:11px;cursor:pointer;font-family:Arial,sans-serif">x</button></td></tr>';
+  });
+  h+='</tbody></table>';
+  document.getElementById('panel-content').innerHTML=h;
+}
+function cerrarPanel(){document.getElementById('panel-avances').style.display='none';}
+function lgBorrar(i){
+  if(!confirm('Borrar?'))return;
+  var id=AVANCES[i]._id;
+  AVANCES.splice(i,1);
+  if(id)sbDel('sfm_avances','?id=eq.'+id);
+  verAvances();lgRender();
+}
+
+// ── DIAS NO LABORADOS ──
+function ntGuardar(){
+  var fecha=document.getElementById('nt-fecha').value||today();
+  var rec={fecha:fecha,motivo:document.getElementById('nt-tipo').value,clima:document.getElementById('nt-clima').value,comentario:document.getElementById('nt-notas').value,afecta:+document.getElementById('nt-afecta').value};
+  NT_ROWS.unshift(rec);idbSaveAll();ntRender();var nc=document.getElementById('nt-cnt');if(nc)nc.textContent=NT_ROWS.length;
+  document.getElementById('nt-notas').value='';
+  msg('nt-msg','Incidencia registrada',true);
+  sbSave('sfm_no_trabajados',rec);
+}
+function ntRender(){
+  var el=document.getElementById('nt-lista');if(!el)return;
+  if(!NT_ROWS.length){el.innerHTML='<div class="empty">Sin incidencias</div>';return;}
+  var TIPOS={no_laborado:'No laborado',clima:'Clima adverso',falla:'Falla mecanica',suspension:'Suspension',bloqueo:'Bloqueo',feriado:'Festivo'};
+  var h='<table><thead><tr><th>Fecha</th><th>Tipo</th><th>Clima</th><th>Notas</th></tr></thead><tbody>';
+  NT_ROWS.slice(0,15).forEach(function(r){h+='<tr><td><b>'+fmtD(r.fecha)+'</b></td><td style="font-size:11px">'+(TIPOS[r.motivo]||r.motivo)+'</td><td style="font-size:11px">'+(r.clima||'')+'</td><td style="font-size:11px">'+(r.comentario||'')+'</td></tr>';});
+  h+='</tbody></table>';el.innerHTML=h;
+}
+
+// ══════════════════
+// REPORTE RD
+// ══════════════════
+function rdInit(){
+  var rdFecha=document.getElementById('rd-fecha');
+  rdFecha.value=today();
+  // Pre-fill from today's larguillo avances
+  rdPreFillFromLarguillo(today());
+}
+function rdPreFillFromLarguillo(fecha){
+  var todayAvs=AVANCES.filter(function(r){return r.fecha===fecha;});
+  if(!todayAvs.length)return;
+  ACTS.forEach(function(act,i){
+    var av=todayAvs.filter(function(r){return r.actuacion===act.name;});
+    if(!av.length)return;
+    var iniEl=document.getElementById('ra-ini'+i);
+    var finEl=document.getElementById('ra-fin'+i);
+    var volEl=document.getElementById('ra-vol'+i);
+    if(!iniEl)return;
+    // Use first/last range of day
+    var inis=av.map(function(r){return parseCad(r.ini);});
+    var fins=av.map(function(r){return parseCad(r.fin);});
+    var totalVol=av.reduce(function(s,r){return s+(+r.volumen||0);},0);
+    if(!iniEl.value) iniEl.value=fmtCad(Math.min.apply(null,inis));
+    if(!finEl.value) finEl.value=fmtCad(Math.max.apply(null,fins));
+    if(!volEl.value||volEl.value==='0') volEl.value=totalVol;
+  });
+}
+function rdOnFechaChange(){
+  rdPreFillFromLarguillo(document.getElementById('rd-fecha').value);
+}
+function _rdInit_inner(){
+  document.getElementById('rd-fecha').value=today();
+  var wrap=document.getElementById('rd-acts-wrap');
+  var h='<div style="font-size:12px;font-weight:700;color:#1c2b4a;margin:10px 0 6px">Actividades ejecutadas hoy</div>';
+  ACTS.forEach(function(act,i){
+    h+='<div style="margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #f1f5f9">';
+    h+='<div style="font-size:10px;font-weight:700;color:#fff;background:'+act.color+';display:inline-block;padding:2px 8px;border-radius:4px;margin-bottom:5px">'+act.name.slice(0,30)+'</div>';
+    h+='<div class="g3" style="gap:5px"><input placeholder="Ini 0+000" id="ra-ini'+i+'" style="padding:5px 7px;border:1px solid #d1d5db;border-radius:5px;font-size:11px;margin:0"><input placeholder="Fin 0+020" id="ra-fin'+i+'" style="padding:5px 7px;border:1px solid #d1d5db;border-radius:5px;font-size:11px;margin:0"><input type="number" placeholder="Vol." id="ra-vol'+i+'" style="padding:5px 7px;border:1px solid #d1d5db;border-radius:5px;font-size:11px;margin:0"></div></div>';
+  });
+  wrap.innerHTML=h;
+  sbLoad('sfm_rd','?order=fecha.desc',function(d){if(d&&d.length){RDS=d;rdRenderHist();}});
+}
+function rdGuardar(){
+  var acts=[];
+  ACTS.forEach(function(act,i){
+    var ini=document.getElementById('ra-ini'+i).value;
+    var vol=document.getElementById('ra-vol'+i).value;
+    if(ini||vol)acts.push({act:act.name,ini:ini,fin:document.getElementById('ra-fin'+i).value,vol:+vol||0});
+  });
+  if(!acts.length){msg('rd-msg','Captura al menos una actividad',false);return;}
+  var rec={fecha:document.getElementById('rd-fecha').value||today(),clima:document.getElementById('rd-clima').value,turno:document.getElementById('rd-turno').value,obs:document.getElementById('rd-obs').value,actividades:JSON.stringify(acts)};
+  RDS.unshift(rec);idbSaveAll();rdRenderHist();msg('rd-msg','Reporte diario guardado',true);
+  sbSave('sfm_rd',rec);
+}
+function rdRenderHist(){
+  var cnt=document.getElementById('rd-hist-cnt');if(cnt)cnt.textContent=RDS.length;
+  var el=document.getElementById('rd-hist');if(!el)return;
+  if(!RDS.length){el.innerHTML='<div class="empty">Sin reportes</div>';return;}
+  var h='';
+  RDS.slice(0,20).forEach(function(r){
+    var acts=typeof r.actividades==='string'?JSON.parse(r.actividades||'[]'):r.actividades||[];
+    h+='<div style="border-bottom:1px solid #f1f5f9;padding:8px 0"><b>'+fmtD(r.fecha)+'</b> <span class="chip" style="background:#dbeafe;color:#1e40af">'+r.clima+'</span> <span class="chip" style="background:#f1f5f9;color:#374151">'+r.turno.split(' ')[0]+'</span>';
+    h+='<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:5px">';
+    acts.forEach(function(a){h+='<span class="chip" style="background:#f0fdf4;color:#166534">'+a.act.slice(0,16)+': '+a.vol+'</span>';});
+    h+='</div>';if(r.obs)h+='<div style="font-size:11px;color:#6b7280;margin-top:3px">'+r.obs+'</div>';
+    h+='</div>';
+  });
+  el.innerHTML=h;
+}
+
+// ══════════════════
+// PERSONAL
+// ══════════════════
+function persInit(){
+  document.getElementById('p-asist-fecha').value=today();
+  persRenderLista();persRenderAsist();
+  sbLoad('sfm_personal','?order=nombre.asc',function(d){if(d&&d.length){PERSONAL=d;persRenderLista();persRenderAsist();document.getElementById('p-cnt').textContent=PERSONAL.length;}});
+  sbLoad('sfm_asistencia','?order=fecha.desc&limit=30',function(d){if(d&&d.length){ASISTENCIA=d;persRenderHist();}});
+}
+function persAgregar(){
+  var nombre=document.getElementById('p-nombre').value.trim();
+  if(!nombre){msg('p-msg','Ingresa nombre',false);return;}
+  var rec={nombre:nombre,cat:document.getElementById('p-cat').value,empresa:document.getElementById('p-emp').value,imss:document.getElementById('p-imss').value,activo:true,alta:today()};
+  rec.id=Date.now();PERSONAL.push(rec);idbSaveAll();persRenderLista();persRenderAsist();
+  document.getElementById('p-nombre').value='';document.getElementById('p-imss').value='';
+  document.getElementById('p-cnt').textContent=PERSONAL.length;
+  msg('p-msg',nombre+' agregado',true);sbSave('sfm_personal',rec);
+}
+function persRenderLista(){
+  var el=document.getElementById('p-lista');if(!el)return;
+  if(!PERSONAL.length){el.innerHTML='<div class="empty">Sin personal</div>';return;}
+  var h='<table><thead><tr><th>Nombre</th><th>Categoria</th><th>Empresa</th></tr></thead><tbody>';
+  PERSONAL.forEach(function(p){h+='<tr><td><b>'+p.nombre+'</b></td><td style="font-size:11px">'+p.cat+'</td><td><span class="chip" style="background:'+(p.empresa==='XIMA'?'#dbeafe':'#dcfce7')+';color:'+(p.empresa==='XIMA'?'#1e40af':'#166534')+'">'+p.empresa+'</span></td></tr>';});
+  h+='</tbody></table>';el.innerHTML=h;
+}
+function persRenderAsist(){
+  var el=document.getElementById('p-asist-form');if(!el)return;
+  if(!PERSONAL.length){el.innerHTML='<div class="empty">Agrega personal primero</div>';return;}
+  var h='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
+  PERSONAL.forEach(function(p){
+    h+='<label style="display:flex;align-items:center;gap:8px;padding:9px;border:2px solid #e2e8f0;border-radius:8px;cursor:pointer;font-size:12px;font-weight:400;background:#fff">';
+    h+='<input type="checkbox" id="asist-'+p.id+'" style="width:auto;margin:0;flex-shrink:0"><span><b>'+p.nombre+'</b><br><span style="font-size:10px;color:#6b7280">'+p.cat+'</span></span></label>';
+  });
+  h+='</div>';el.innerHTML=h;
+  document.getElementById('p-asist-summary').textContent=PERSONAL.length+' trabajadores en nomina';
+}
+function persGuardarAsist(){
+  var fecha=document.getElementById('p-asist-fecha').value||today();
+  var presentes=PERSONAL.filter(function(p){var cb=document.getElementById('asist-'+p.id);return cb&&cb.checked;}).map(function(p){return p.id;});
+  var rec={fecha:fecha,presentes:JSON.stringify(presentes),total:PERSONAL.length};
+  ASISTENCIA.unshift(rec);idbSaveAll();persRenderHist();
+  msg('p-msg',presentes.length+'/'+PERSONAL.length+' presentes',true);sbSave('sfm_asistencia',rec);
+}
+function persRenderHist(){
+  var el=document.getElementById('p-hist');if(!el)return;
+  if(!ASISTENCIA.length){el.innerHTML='<div class="empty">Sin historial</div>';return;}
+  var h='<table><thead><tr><th>Fecha</th><th>Presentes</th><th>Total</th><th>%</th></tr></thead><tbody>';
+  ASISTENCIA.forEach(function(a){
+    var p=typeof a.presentes==='string'?JSON.parse(a.presentes||'[]'):a.presentes||[];
+    var pct=a.total>0?Math.round(p.length/a.total*100):0;
+    h+='<tr><td><b>'+fmtD(a.fecha)+'</b></td><td><b style="color:#16a34a">'+p.length+'</b></td><td>'+a.total+'</td><td><b style="color:'+(pct>=80?'#16a34a':pct>=50?'#f59e0b':'#dc2626')+'">'+pct+'%</b></td></tr>';
+  });
+  h+='</tbody></table>';el.innerHTML=h;
+}
+
+// ══════════════════
+// EQUIPOS
+// ══════════════════
+function eqInit(){
+  document.getElementById('dsl-fecha').value=today();document.getElementById('hrs-fecha').value=today();
+  eqRenderFlota();eqRenderSelects();eqUpdateKpis();dslRender();hrsRender();
+  sbLoad('sfm_equipos','?order=tipo.asc',function(d){if(d&&d.length){EQUIPOS=d;eqRenderFlota();eqRenderSelects();eqUpdateKpis();}});
+  sbLoad('sfm_diesel','?order=fecha.desc&limit=50',function(d){if(d&&d.length){DIESEL=d;dslRender();eqUpdateKpis();}});
+  sbLoad('sfm_horas','?order=fecha.desc&limit=50',function(d){if(d&&d.length){HORAS=d;hrsRender();eqUpdateKpis();}});
+}
+function eqUpdateKpis(){
+  var k1=document.getElementById('eq-kpi1');if(k1)k1.textContent=EQUIPOS.length;
+  var k2=document.getElementById('eq-kpi2');if(k2)k2.textContent=HORAS.reduce(function(s,h){return s+(+h.horas||0);},0).toFixed(1);
+  var k3=document.getElementById('eq-kpi3');if(k3)k3.textContent=DIESEL.reduce(function(s,d){return s+(+d.litros||0);},0).toLocaleString();
+}
+function eqAgregar(){
+  var marca=document.getElementById('eq-marca').value;if(!marca)return;
+  var rec={tipo:document.getElementById('eq-tipo').value,marca:marca,modelo:document.getElementById('eq-modelo').value,placa:document.getElementById('eq-placa').value,capacidad:document.getElementById('eq-cap').value,activo:true,alta:today()};
+  rec.id=Date.now();EQUIPOS.push(rec);idbSaveAll();eqRenderFlota();eqRenderSelects();eqUpdateKpis();
+  document.getElementById('eq-marca').value='';document.getElementById('eq-placa').value='';
+  sbSave('sfm_equipos',rec);
+}
+function eqRenderFlota(){
+  var el=document.getElementById('eq-lista');if(!el)return;
+  if(!EQUIPOS.length){el.innerHTML='<div class="empty">Sin equipos</div>';return;}
+  var h='<table><thead><tr><th>Tipo</th><th>Marca</th><th>Placa</th><th>Cap.</th></tr></thead><tbody>';
+  EQUIPOS.forEach(function(e){h+='<tr><td><b>'+e.tipo+'</b></td><td>'+e.marca+' '+e.modelo+'</td><td style="font-family:monospace;font-size:11px">'+(e.placa||'')+'</td><td>'+(e.capacidad||'')+'</td></tr>';});
+  h+='</tbody></table>';el.innerHTML=h;
+}
+function eqRenderSelects(){
+  var opts='<option value="">Seleccionar</option>'+EQUIPOS.map(function(e){return'<option value="'+e.id+'">'+e.tipo+' '+e.placa+'</option>';}).join('');
+  var s1=document.getElementById('dsl-eq');if(s1)s1.innerHTML=opts;
+  var s2=document.getElementById('hrs-eq');if(s2)s2.innerHTML=opts;
+}
+function dslGuardar(){
+  var litros=+document.getElementById('dsl-litros').value;if(!litros){msg('dsl-msg','Ingresa litros',false);return;}
+  var rec={fecha:document.getElementById('dsl-fecha').value||today(),eq_id:document.getElementById('dsl-eq').value,litros:litros,horometro:document.getElementById('dsl-horo').value,vale:document.getElementById('dsl-vale').value,proveedor:document.getElementById('dsl-prov').value};
+  DIESEL.unshift(rec);idbSaveAll();dslRender();eqUpdateKpis();
+  document.getElementById('dsl-litros').value='';document.getElementById('dsl-vale').value='';
+  msg('dsl-msg',litros+'L guardados',true);sbSave('sfm_diesel',rec);
+}
+function dslRender(){
+  var total=DIESEL.reduce(function(s,d){return s+(+d.litros||0);},0);
+  var el=document.getElementById('dsl-concentrado');
+  if(el)el.innerHTML='<div style="background:#fff7ed;border-radius:8px;padding:10px;border:1px solid #fed7aa"><div style="font-size:11px;color:#9a3412;font-weight:700">Concentrado diesel</div><div style="font-size:26px;font-weight:900;color:#ea580c;margin:4px 0">'+total.toLocaleString()+' L</div><div style="font-size:11px;color:#9a3412">'+DIESEL.length+' cargas</div></div>';
+}
+function hrsGuardar(){
+  var horas=+document.getElementById('hrs-horas').value;if(!horas){msg('hrs-msg','Ingresa horas',false);return;}
+  var rec={fecha:document.getElementById('hrs-fecha').value||today(),eq_id:document.getElementById('hrs-eq').value,horas:horas,actividad:document.getElementById('hrs-act').value,obs:document.getElementById('hrs-obs').value};
+  HORAS.unshift(rec);idbSaveAll();hrsRender();eqUpdateKpis();
+  document.getElementById('hrs-horas').value='';
+  msg('hrs-msg',horas+'h guardadas',true);sbSave('sfm_horas',rec);
+}
+function hrsRender(){
+  var el=document.getElementById('hrs-lista');if(!el)return;
+  if(!HORAS.length){el.innerHTML='<div class="empty">Sin horas</div>';return;}
+  var h='';
+  HORAS.slice(0,10).forEach(function(r){
+    var eq=EQUIPOS.find(function(e){return String(e.id)===String(r.eq_id);});
+    h+='<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f1f5f9;font-size:12px"><span><b>'+fmtD(r.fecha)+'</b> · '+(eq?eq.tipo:'')+'</span><b style="color:#1c2b4a">'+r.horas+'h</b></div>';
+  });
+  el.innerHTML=h;
+}
+
+// ══════════════════
+// MATERIALES
+// ══════════════════
+function matInit(){
+  document.getElementById('mat-fecha').value=today();
+  var sel=document.getElementById('mat-sel');
+  sel.innerHTML=MAT_BASE.map(function(m){return'<option value="'+m.id+'">'+m.nombre+' ('+m.unidad+')</option>';}).join('');
+  matRenderInv();matRenderMovs();
+  sbLoad('sfm_movimientos','?order=fecha.desc&limit=50',function(d){if(d&&d.length){MOVIMIENTOS=d;matRenderInv();matRenderMovs();}});
+}
+function matGuardar(){
+  var cant=+document.getElementById('mat-cant').value;if(!cant){msg('mat-msg','Ingresa cantidad',false);return;}
+  var rec={fecha:document.getElementById('mat-fecha').value||today(),mat_id:document.getElementById('mat-sel').value,tipo:document.getElementById('mat-tipo').value,cantidad:cant,origen:document.getElementById('mat-origen').value};
+  MOVIMIENTOS.unshift(rec);idbSaveAll();matRenderInv();matRenderMovs();
+  document.getElementById('mat-cant').value='';document.getElementById('mat-origen').value='';
+  msg('mat-msg','Movimiento registrado',true);sbSave('sfm_movimientos',rec);
+}
+function matRenderInv(){
+  var el=document.getElementById('mat-inv');if(!el)return;
+  var h='<table><thead><tr><th>Material</th><th>Und</th><th>Prog.</th><th>Ent.</th><th>Con.</th><th>Saldo</th><th>%</th></tr></thead><tbody>';
+  MAT_BASE.forEach(function(m){
+    var ent=MOVIMIENTOS.filter(function(mv){return mv.mat_id===m.id&&mv.tipo==='entrada';}).reduce(function(s,mv){return s+(+mv.cantidad||0);},0);
+    var con=MOVIMIENTOS.filter(function(mv){return mv.mat_id===m.id&&mv.tipo==='consumo';}).reduce(function(s,mv){return s+(+mv.cantidad||0);},0);
+    var saldo=ent-con;var pct=m.prog>0?Math.round(con/m.prog*100):null;
+    h+='<tr><td style="font-size:11px"><b>'+m.nombre.slice(0,20)+'</b></td><td>'+m.unidad+'</td><td>'+m.prog.toLocaleString()+'</td><td>'+ent.toLocaleString()+'</td><td>'+con.toLocaleString()+'</td>';
+    h+='<td style="font-weight:700;color:'+(saldo<0?'#dc2626':'inherit')+'">'+saldo.toLocaleString()+'</td>';
+    h+='<td style="font-weight:700;color:'+(pct===null?'#9ca3af':pct<50?'#dc2626':pct<80?'#f59e0b':'#16a34a')+'">'+(pct!==null?pct+'%':'')+'</td></tr>';
+  });
+  h+='</tbody></table>';el.innerHTML=h;
+}
+function matRenderMovs(){
+  var el=document.getElementById('mat-movs');if(!el)return;
+  if(!MOVIMIENTOS.length){el.innerHTML='<div class="empty">Sin movimientos</div>';return;}
+  var h='';
+  MOVIMIENTOS.slice(0,10).forEach(function(m){
+    var mat=MAT_BASE.find(function(x){return x.id===m.mat_id;});
+    h+='<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f1f5f9;font-size:12px"><div><b>'+fmtD(m.fecha)+'</b> · '+(mat?mat.nombre.slice(0,18):'')+'</div><span class="chip" style="background:'+(m.tipo==='entrada'?'#dcfce7':'#fef2f2')+';color:'+(m.tipo==='entrada'?'#166534':'#dc2626')+'">'+( m.tipo==='entrada'?'+':'-')+(+m.cantidad).toLocaleString()+'</span></div>';
+  });
+  el.innerHTML=h;
+}
+
+// ══════════════════
+// ACARREOS
+// ══════════════════
+var ACAR_BASE=[{"no":1,"req":"C.D.-003/26","fecha":"2026-05-02","folio":"0010","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNANDEZ","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":2,"req":"C.D.-003/26","fecha":"2026-05-02","folio":"0009","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNANDEZ","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":3,"req":"C.D.-003/26","fecha":"2026-04-30","folio":"0008","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNANDEZ","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":4,"req":"C.D.-003/26","fecha":"2026-04-30","folio":"0007","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNANDEZ","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":5,"req":"C.D.-003/26","fecha":"2026-04-30","folio":"0005","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNANDEZ","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":6,"req":"C.D.-003/26","fecha":"2026-04-30","folio":"0987","placas":"66BK-3H","empresa":"XIMA","eco":"TC-06","operador":"ENRIQUE MENDOZA","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":7,"req":"C.D.-003/26","fecha":"2026-04-30","folio":"0006","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNANDEZ","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":8,"req":"C.D.-003/26","fecha":"2026-04-29","folio":"0986","placas":"67BK-3H","empresa":"XIMA","eco":"TC-05","operador":"ENRIQUE TORRES","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":9,"req":"C.D.-003/26","fecha":"2026-04-29","folio":"0004","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNANDEZ","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":10,"req":"C.D.-003/26","fecha":"2026-04-29","folio":"0985","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNANDEZ","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":11,"req":"C.D.-003/26","fecha":"2026-04-28","folio":"0003","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNANDEZ","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":12,"req":"C.D.-003/26","fecha":"2026-05-05","folio":"3497","placas":"9CNF3-01","empresa":"UNIÓN REFORMA","eco":"UR-26","operador":"YIMI RUIZ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":13,"req":"C.D.-003/26","fecha":"2026-05-05","folio":"3498","placas":"9CNF3-01","empresa":"UNIÓN REFORMA","eco":"UR-26","operador":"YIMI RUIZ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":14,"req":"C.D.-003/26","fecha":"2026-05-11","folio":"3285","placas":"DC285-9F","empresa":"UNIÓN REFORMA","eco":"UR-119","operador":"ALEJANDRO ACOPA","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":15,"req":"C.D.-018/26","fecha":"2026-05-12","folio":"A 3427","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNANDEZ","banco":"MAROGU","cap":30,"material":"REVESTIMIENTO","clasif":"ENTRADA"},{"no":16,"req":"C.D.-018/26","fecha":" 12/05/202","folio":"A 3448","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNANDEZ","banco":"MAROGU","cap":30,"material":"REVESTIMIENTO","clasif":"ENTRADA"},{"no":17,"req":"C.D.-018/26","fecha":"2026-05-13","folio":"A 3455","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNANDEZ","banco":"MAROGU","cap":30,"material":"REVESTIMIENTO","clasif":"ENTRADA"},{"no":18,"req":"C.D.-018/26","fecha":"2026-05-13","folio":"A 3456","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNANDEZ","banco":"MAROGU","cap":30,"material":"REVESTIMIENTO","clasif":"ENTRADA"},{"no":19,"req":"C.D.-018/26","fecha":"2026-05-14","folio":"A 3466","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNANDEZ","banco":"MAROGU","cap":30,"material":"REVESTIMIENTO","clasif":"ENTRADA"},{"no":20,"req":"C.D.-018/26","fecha":"2026-05-14","folio":"A 3478","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNANDEZ","banco":"MAROGU","cap":30,"material":"REVESTIMIENTO","clasif":"ENTRADA"},{"no":21,"req":"C.D.-018/26","fecha":"2026-05-15","folio":"A 3482","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNANDEZ","banco":"MAROGU","cap":30,"material":"REVESTIMIENTO","clasif":"ENTRADA"},{"no":22,"req":"C.D.-018/26","fecha":"2026-05-15","folio":"11","placas":"38AD7E","empresa":"UNIÓN REFORMA","eco":"5","operador":"RUBICEL ASCENCIO HIDALGO ","banco":"VYCSA","cap":30,"material":"REVESTIMIENTO","clasif":"ENTRADA"},{"no":23,"req":"C.D.-018/26","fecha":"2026-05-15","folio":"3","placas":"17DE8K","empresa":"UNIÓN REFORMA","eco":"33","operador":"CARLOS MARTÍNEZ HERNÁNDEZ ","banco":"VYCSA","cap":30,"material":"REVESTIMIENTO","clasif":"ENTRADA"},{"no":24,"req":"C.D.-018/26","fecha":"2026-05-15","folio":"9","placas":"537DW9","empresa":"UNIÓN REFORMA","eco":"12","operador":"ROMAN ASCENCIO DOMÍNGUEZ ","banco":"VYCSA","cap":30,"material":"REVESTIMIENTO","clasif":"ENTRADA"},{"no":25,"req":"C.D.-018/26","fecha":"2026-05-15","folio":"1","placas":"12BC9P","empresa":"UNIÓN REFORMA","eco":"1","operador":"ARTURO RODRÍGUEZ PÉREZ ","banco":"VYCSA","cap":30,"material":"REVESTIMIENTO","clasif":"ENTRADA"},{"no":26,"req":"C.D.-018/26","fecha":"2026-05-15","folio":"5","placas":"CX0794C","empresa":"UNIÓN REFORMA","eco":"5","operador":"DIEGO ASCENCIO ","banco":"VYCSA","cap":30,"material":"REVESTIMIENTO","clasif":"ENTRADA"},{"no":27,"req":"C.D.-018/26","fecha":"2026-05-15","folio":"7","placas":"99AC95","empresa":"UNIÓN REFORMA","eco":"5","operador":"MANUEL GUZMÁN CRUZ ","banco":"VYCSA","cap":30,"material":"REVESTIMIENTO","clasif":"ENTRADA"},{"no":28,"req":"C.D.-018/26","fecha":"2026-05-15","folio":"8","placas":"367EP3","empresa":"UNIÓN REFORMA","eco":"2","operador":"JOSE ARTURO MONTELVO ","banco":"VYCSA","cap":30,"material":"REVESTIMIENTO","clasif":"ENTRADA"},{"no":29,"req":"C.D.-018/26","fecha":"2026-05-15","folio":"13","placas":"CW6565D","empresa":"UNIÓN REFORMA","eco":"S/N","operador":"RIGOBERTO SANCHEZ RODRIGUEZ ","banco":"VYCSA","cap":30,"material":"REVESTIMIENTO","clasif":"ENTRADA"},{"no":30,"req":"C.D.-018/26","fecha":"2026-05-15","folio":"4","placas":"17BE8K","empresa":"UNIÓN REFORMA","eco":"33","operador":"CARLOS MARTÍNEZ HERNÁNDEZ ","banco":"VYCSA","cap":30,"material":"REVESTIMIENTO","clasif":"ENTRADA"},{"no":31,"req":"C.D.-018/26","fecha":"2026-05-15","folio":"A 3495","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNANDEZ","banco":"MAROGU","cap":30,"material":"REVESTIMIENTO","clasif":"ENTRADA"},{"no":32,"req":"C.D.-018/26","fecha":"2026-05-15","folio":"2","placas":"12BC9P","empresa":"UNIÓN REFORMA","eco":"1","operador":"ARTURO RODRÍGUEZ PÉREZ ","banco":"VYCSA","cap":30,"material":"REVESTIMIENTO","clasif":"ENTRADA"},{"no":33,"req":"C.D.-018/26","fecha":"2026-05-15","folio":"12","placas":"38AD7E","empresa":"UNIÓN REFORMA","eco":"5","operador":"RUBICEL ASCENCIO HIDALGO ","banco":"VYCSA","cap":30,"material":"REVESTIMIENTO","clasif":"ENTRADA"},{"no":34,"req":"C.D.-018/26","fecha":"2026-05-15","folio":"10","placas":"537DW9","empresa":"UNIÓN REFORMA","eco":"12","operador":"ROMAN ASCENCIO DOMÍNGUEZ ","banco":"VYCSA","cap":30,"material":"REVESTIMIENTO","clasif":"ENTRADA"},{"no":35,"req":"C.D.-018/26","fecha":"2026-05-16","folio":"A 3497","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNANDEZ","banco":"MAROGU","cap":30,"material":"REVESTIMIENTO","clasif":"ENTRADA"},{"no":36,"req":"C.D.-018/26","fecha":"2026-05-16","folio":"6","placas":"CX0794C","empresa":"UNIÓN REFORMA","eco":"5","operador":"DIEGO ASCENCIO ","banco":"VYCSA","cap":30,"material":"REVESTIMIENTO","clasif":"ENTRADA"},{"no":37,"req":"C.D.-018/26","fecha":"2026-05-18","folio":"A 3524","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNANDEZ","banco":"MAROGU","cap":30,"material":"REVESTIMIENTO","clasif":"ENTRADA"},{"no":38,"req":"C.D.-018/26","fecha":"2026-05-19","folio":"A 3549","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNANDEZ","banco":"MAROGU","cap":30,"material":"REVESTIMIENTO","clasif":"ENTRADA"},{"no":39,"req":"C.D.-018/26","fecha":"2026-05-19","folio":"A 3555","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNANDEZ","banco":"MAROGU","cap":30,"material":"REVESTIMIENTO","clasif":"ENTRADA"},{"no":40,"req":"C.D.-014/26","fecha":"2026-05-21","folio":"104","placas":"12BC9P","empresa":"UNIÓN REFORMA","eco":"1","operador":"ARTURO RODRÍGUEZ ","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":41,"req":"C.D.-014/26","fecha":"2026-05-21","folio":"107","placas":"CW6565D","empresa":"UNIÓN REFORMA","eco":"S/N","operador":"RIGOBERTO SANCHEZ ","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":42,"req":"C.D.-014/26","fecha":"2026-05-21","folio":"119","placas":"CX5155E","empresa":"UNIÓN REFORMA","eco":"3","operador":"INOCENTE ASCENCIO ","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":43,"req":"C.D.-014/26","fecha":"2026-05-22","folio":"101","placas":"17BE8K","empresa":"UNIÓN REFORMA","eco":"3","operador":"CARLOS MARTÍNEZ ","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":44,"req":"C.D.-014/26","fecha":"2026-05-22","folio":"105","placas":"12BC9P","empresa":"UNIÓN REFORMA","eco":"3","operador":"ARTURO RODRÍGUEZ ","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":45,"req":"C.D.-014/26","fecha":"2026-05-22","folio":"114","placas":"367ER3","empresa":"UNIÓN REFORMA","eco":"3","operador":"MANUEL GUZMÁN ","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":46,"req":"C.D.-014/26","fecha":"2026-05-22","folio":"113","placas":"99AC9J","empresa":"UNIÓN REFORMA","eco":"3","operador":"JOSE ARTURO MONTELVO ","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":47,"req":"C.D.-014/26","fecha":"2026-05-22","folio":"110","placas":"537DW","empresa":"UNIÓN REFORMA","eco":"3","operador":"ROMAN ASCENCIO DOMÍNGUEZ ","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":48,"req":"C.D.-019/26","fecha":"2026-05-22","folio":"54","placas":"9CNF305","empresa":"UNIÓN REFORMA","eco":"UR-104","operador":"DAVID LÓPEZ ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":49,"req":"C.D.-019/26","fecha":"2026-05-22","folio":"58","placas":"9CNF301","empresa":"UNIÓN REFORMA","eco":"UR-26","operador":"YIMI RUIZ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":50,"req":"C.D.-019/26","fecha":"2026-05-22","folio":"65","placas":"CW9535F","empresa":"UNIÓN REFORMA","eco":"UR-03","operador":"JOSE CÓRDOVA ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":51,"req":"C.D.-019/26","fecha":"2026-05-22","folio":"71","placas":"DC32668","empresa":"UNIÓN REFORMA","eco":"UR-16","operador":"ANGEL ÁLVAREZ ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":52,"req":"C.D.-019/26","fecha":"2026-05-22","folio":"69","placas":"DC2403F","empresa":"UNIÓN REFORMA","eco":"UR-07","operador":"JESÚS LORENZO ","banco":"ALMACEN UNION","cap":14,"material":"ARENA","clasif":"SALIDA"},{"no":53,"req":"C.D.-019/26","fecha":"2026-05-22","folio":"53","placas":"9CNF328","empresa":"UNIÓN REFORMA","eco":"UR-110","operador":"FLAVIO MARTÍNEZ ","banco":"ALMACEN UNION","cap":14,"material":"ARENA","clasif":"SALIDA"},{"no":54,"req":"C.D.-019/26","fecha":"2026-05-22","folio":"62","placas":"9CNF328","empresa":"UNIÓN REFORMA","eco":"UR-110","operador":"WILBER JIMÉNEZ ","banco":"ALMACEN UNION","cap":14,"material":"ARENA","clasif":"SALIDA"},{"no":55,"req":"C.D.-019/26","fecha":"2026-05-22","folio":"51","placas":"DC2403F","empresa":"UNIÓN REFORMA","eco":"UR-02","operador":"ARTURO MONTELVO ","banco":"ALMACEN UNION","cap":14,"material":"ARENA","clasif":"SALIDA"},{"no":56,"req":"C.D.-019/26","fecha":"2026-05-22","folio":"75","placas":"DC2859F","empresa":"UNIÓN REFORMA","eco":"UR-119","operador":"ALEJANDRO ACOPA","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":57,"req":"C.D.-019/26","fecha":"2026-05-22","folio":"55","placas":"9CNF305","empresa":"UNIÓN REFORMA","eco":"UR-104","operador":"DAVID LÓPEZ ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":58,"req":"C.D.-019/26","fecha":"2026-05-22","folio":"59","placas":"9CNF301","empresa":"UNIÓN REFORMA","eco":"UR-26","operador":"YIMI RUIZ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":59,"req":"C.D.-019/26","fecha":"2026-05-22","folio":"66","placas":"CW9535F","empresa":"UNIÓN REFORMA","eco":"UR-03","operador":"JOSE CÓRDOVA ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":60,"req":"C.D.-019/26","fecha":"2026-05-22","folio":"78","placas":"DA8443F","empresa":"UNIÓN REFORMA","eco":"UR-35","operador":"RICARDO MARTÍNEZ ","banco":"ALMACEN UNION","cap":14,"material":"ARENA","clasif":"SALIDA"},{"no":61,"req":"C.D.-019/26","fecha":"2026-05-22","folio":"72","placas":"DC32668","empresa":"UNIÓN REFORMA","eco":"UR-16","operador":"ANGEL ÁLVAREZ ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":62,"req":"C.D.-014/26","fecha":"2026-05-23","folio":"106","placas":"12BC9P","empresa":"UNIÓN REFORMA","eco":"1","operador":"ARTURO RODRÍGUEZ ","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":63,"req":"C.D.-014/26","fecha":"2026-05-23","folio":"120","placas":"CX5155E","empresa":"UNIÓN REFORMA","eco":"3","operador":"INOCENTE ASCENCIO ","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":64,"req":"C.D.-019/26","fecha":"2026-05-23","folio":"72","placas":"DC2859F","empresa":"UNIÓN REFORMA","eco":"UR-119","operador":"ALEJANDRO ACOPA ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":65,"req":"C.D.-019/26","fecha":"2026-05-23","folio":"74","placas":"CZ616H","empresa":"UNIÓN REFORMA","eco":"UR-102","operador":"ÁNGEL ÁLVAREZ ","banco":"ALMACEN UNION","cap":14,"material":"ARENA","clasif":"SALIDA"},{"no":66,"req":"C.D.-019/26","fecha":"2026-05-23","folio":"63","placas":"9CNF328","empresa":"UNIÓN REFORMA","eco":"UR-110","operador":"WILBER JIMÉNEZ ","banco":"ALMACEN UNION","cap":14,"material":"ARENA","clasif":"SALIDA"},{"no":67,"req":"C.D.-019/26","fecha":"2026-05-23","folio":"56","placas":"9CNF305","empresa":"UNIÓN REFORMA","eco":"UR-104","operador":"DAVID LÓPEZ ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":68,"req":"C.D.-019/26","fecha":"2026-05-23","folio":"67","placas":"CW9535","empresa":"UNIÓN REFORMA","eco":"UR-03","operador":"JOSE CÓRDOVA ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":69,"req":"C.D.-019/26","fecha":"2026-05-23","folio":"60","placas":"9CNF 301","empresa":"UNIÓN REFORMA","eco":"UR-26","operador":"YIMI RUIZ ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":70,"req":"C.D.-019/26","fecha":"2026-05-23","folio":"73","placas":"9CNF 314","empresa":"UNIÓN REFORMA","eco":"UR-136","operador":"ANTONIO DE LOS SANTOS ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":71,"req":"C.D.-019/26","fecha":"2026-05-23","folio":"77","placas":"BC2859C","empresa":"UNIÓN REFORMA","eco":"UR-119","operador":"ALEJANDRO ACOPA ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":72,"req":"C.D.-019/26","fecha":"2026-05-23","folio":"52","placas":"DC2403F","empresa":"UNIÓN REFORMA","eco":"UR-110","operador":"ARTURO MONTELVO ","banco":"ALMACEN UNION","cap":14,"material":"ARENA","clasif":"SALIDA"},{"no":73,"req":"C.D.-014/26","fecha":"2026-05-25","folio":"116","placas":"4GJ972A","empresa":"UNIÓN REFORMA","eco":"S/N","operador":"ANGEL","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":74,"req":"C.D.-014/26","fecha":"2026-05-25","folio":"171","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNANDEZ","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":75,"req":"C.D.-014/26","fecha":"2026-05-25","folio":"166","placas":"66BK-3H","empresa":"XIMA","eco":"TC-06","operador":"ENRIQUE TORRES","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":76,"req":"C.D.-019/26","fecha":"2026-05-25","folio":"87","placas":"CX6404F","empresa":"UNIÓN REFORMA","eco":"UR-103","operador":"DANIEL RAMÍREZ ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":77,"req":"C.D.-019/26","fecha":"2026-05-25","folio":"57","placas":"DA0630J","empresa":"UNIÓN REFORMA","eco":"UR-57","operador":"ROMAN ASCENCIO ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":78,"req":"C.D.-019/26","fecha":"2026-05-25","folio":"81","placas":"9CNF301","empresa":"UNIÓN REFORMA","eco":"UR-26","operador":"YIMI RUIZ ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":79,"req":"C.D.-019/26","fecha":"2026-05-25","folio":"64","placas":"DA0630J","empresa":"UNIÓN REFORMA","eco":"UR-57","operador":"ROMAN ASCENCIO ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":80,"req":"C.D.-019/26","fecha":"2026-05-25","folio":"84","placas":"480DW9","empresa":"UNIÓN REFORMA","eco":"UR-100","operador":"FERNANDO ASCENCIO ","banco":"ALMACEN UNION","cap":14,"material":"ARENA","clasif":"SALIDA"},{"no":81,"req":"C.D.-019/26","fecha":"2026-05-25","folio":"83","placas":"CV6744D","empresa":"UNIÓN REFORMA","eco":"UR-211","operador":"HUMBERTO CONTREROS ","banco":"ALMACEN UNION","cap":14,"material":"ARENA","clasif":"SALIDA"},{"no":82,"req":"C.D.-019/26","fecha":"2026-05-25","folio":"16","placas":"9CNF301","empresa":"UNIÓN REFORMA","eco":"UR-26","operador":"YIMI RUIZ ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":83,"req":"C.D.-019/26","fecha":"2026-05-25","folio":"68","placas":"CV6744D","empresa":"UNIÓN REFORMA","eco":"UR-211","operador":"HUMBERTO CONTREROS ","banco":"ALMACEN UNION","cap":14,"material":"ARENA","clasif":"SALIDA"},{"no":84,"req":"C.D.-018/26","fecha":"2026-05-25","folio":"A 3994","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNANDEZ","banco":"MAROGU","cap":30,"material":"REVESTIMIENTO","clasif":"ENTRADA"},{"no":85,"req":"C.D.-018/26","fecha":"2026-05-25","folio":"A 3993","placas":"66BK-3H","empresa":"XIMA","eco":"TC-06","operador":"ENRIQUE TORRES","banco":"MAROGU","cap":30,"material":"REVESTIMIENTO","clasif":"ENTRADA"},{"no":86,"req":"C.D.-014/26","fecha":"2026-05-26","folio":"102","placas":"17BE8K","empresa":"UNIÓN REFORMA","eco":"33","operador":"CARLOS MARTINEZ","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":87,"req":"C.D.-014/26","fecha":"2026-05-26","folio":"172","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNANDEZ","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":88,"req":"C.D.-014/26","fecha":"2026-05-26","folio":"173","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNANDEZ","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":89,"req":"C.D.-014/26","fecha":"2026-05-26","folio":"63397","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNANDEZ","banco":"RANCHO NUEVO","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":90,"req":"C.D.-014/26","fecha":"2026-05-26","folio":"63419","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNANDEZ","banco":"RANCHO NUEVO","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":91,"req":"C.D.-019/26","fecha":"2026-05-26","folio":"70","placas":"CV6744D","empresa":"UNIÓN REFORMA","eco":"UR-211","operador":"HUMBERTO CONTREROS","banco":"ALMACEN UNION","cap":14,"material":"ARENA","clasif":"SALIDA"},{"no":92,"req":"C.D.-019/26","fecha":"2026-05-26","folio":"79","placas":"UR31315","empresa":"UNIÓN REFORMA","eco":"UR-30","operador":"JULIO CESAR LÓPEZ ","banco":"ALMACEN UNION","cap":14,"material":"ARENA","clasif":"SALIDA"},{"no":93,"req":"C.D.-019/26","fecha":"2026-05-26","folio":"85","placas":"486DW9","empresa":"UNIÓN REFORMA","eco":"UR-100","operador":"SAMUEL MINGO ","banco":"ALMACEN UNION","cap":14,"material":"ARENA","clasif":"SALIDA"},{"no":94,"req":"C.D.-019/26","fecha":"2026-05-26","folio":"82","placas":"9CNF301","empresa":"UNIÓN REFORMA","eco":"UR-26","operador":"YIMI RUIZ ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":95,"req":"C.D.-019/26","fecha":"2026-05-26","folio":"80","placas":"UR31315","empresa":"UNIÓN REFORMA","eco":"UR-30","operador":"JULIO CESAR LÓPEZ ","banco":"ALMACEN UNION","cap":14,"material":"ARENA","clasif":"SALIDA"},{"no":96,"req":"C.D.-019/26","fecha":"2026-05-26","folio":"102","placas":"DA3751G","empresa":"UNIÓN REFORMA","eco":"UR-40","operador":"JAVIER ASCENCIO ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":97,"req":"C.D.-019/26","fecha":"2026-05-26","folio":"103","placas":"9CNF328","empresa":"UNIÓN REFORMA","eco":"UR-110","operador":"WUILVER JIMÉNEZ ","banco":"ALMACEN UNION","cap":14,"material":"ARENA","clasif":"SALIDA"},{"no":98,"req":"C.D.-019/26","fecha":"2026-05-26","folio":"104","placas":"9CNF328","empresa":"UNIÓN REFORMA","eco":"UR-110","operador":"WUILVER JIMÉNEZ ","banco":"ALMACEN UNION","cap":14,"material":"ARENA","clasif":"SALIDA"},{"no":99,"req":"C.D.-014/26","fecha":"2026-05-27","folio":"176","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNANDEZ","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":100,"req":"C.D.-014/26","fecha":"2026-05-27","folio":"175","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNANDEZ","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":101,"req":"C.D.-014/26","fecha":"2026-05-27","folio":"174","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNANDEZ","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":102,"req":"C.D.-014/26","fecha":"2026-05-27","folio":"117","placas":"38AD7E","empresa":"UNIÓN REFORMA","eco":"S/N","operador":"","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":103,"req":"C.D.-019/26","fecha":"2026-05-27","folio":"108","placas":"9CNF305","empresa":"UNIÓN REFORMA","eco":"UR-104","operador":"DAVID LÓPEZ ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":104,"req":"C.D.-019/26","fecha":"2026-05-27","folio":"107","placas":"9CNF305","empresa":"UNIÓN REFORMA","eco":"UR-104","operador":"DAVID LÓPEZ ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":105,"req":"C.D.-019/26","fecha":"2026-05-27","folio":"122","placas":"9CNF316","empresa":"UNIÓN REFORMA","eco":"UR-08","operador":"LUIS ANGEL ASCENCIO ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":106,"req":"C.D.-019/26","fecha":"2026-05-27","folio":"123","placas":"9CNF316","empresa":"UNIÓN REFORMA","eco":"UR-08","operador":"LUIS ANGEL ASCENCIO ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":107,"req":"C.D.-019/26","fecha":"2026-05-27","folio":"133","placas":"9CNF301","empresa":"UNIÓN REFORMA","eco":"UR-26","operador":"YIMI RUIZ ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":108,"req":"C.D.-019/26","fecha":"2026-05-27","folio":"124","placas":"9CNF316","empresa":"UNIÓN REFORMA","eco":"UR-08","operador":"LUIS ANGEL ASCENCIO ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":109,"req":"C.D.-019/26","fecha":"2026-05-27","folio":"140","placas":"CW9535F","empresa":"UNIÓN REFORMA","eco":"UR-03","operador":"JOSE CÓRDOVA ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":110,"req":"C.D.-019/26","fecha":"2026-05-27","folio":"125","placas":"9CNF316","empresa":"UNIÓN REFORMA","eco":"UR-08","operador":"LUIS ANGEL ASCENCIO ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":111,"req":"C.D.-019/26","fecha":"2026-05-27","folio":"120","placas":"DC2403F","empresa":"UNIÓN REFORMA","eco":"UR-07","operador":"JESÚS LORENZO ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":112,"req":"C.D.-019/26","fecha":"2026-05-27","folio":"121","placas":"DC2403F","empresa":"UNIÓN REFORMA","eco":"UR-07","operador":"JESÚS LORENZO ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":113,"req":"C.D.-019/26","fecha":"2026-05-27","folio":"145","placas":"9CNF305","empresa":"UNIÓN REFORMA","eco":"UR-104","operador":"DAVID LÓPEZ ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":114,"req":"C.D.-019/26","fecha":"2026-05-27","folio":"141","placas":"CW9535F","empresa":"UNIÓN REFORMA","eco":"UR-03","operador":"JOSE CÓRDOVA ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":115,"req":"C.D.-019/26","fecha":"2026-05-27","folio":"119","placas":"DC2403F","empresa":"UNIÓN REFORMA","eco":"UR-07","operador":"JESÚS LORENZO ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":116,"req":"C.D.-019/26","fecha":"2026-05-27","folio":"118","placas":"DC2403F","empresa":"UNIÓN REFORMA","eco":"UR-07","operador":"JESÚS LORENZO ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":117,"req":"C.D.-019/26","fecha":"2026-05-27","folio":"109","placas":"9CNF324","empresa":"UNIÓN REFORMA","eco":"UR-55","operador":"ROSARIO GARCÍA RUIZ ","banco":"ALMACEN UNION","cap":14,"material":"ARENA","clasif":"SALIDA"},{"no":118,"req":"C.D.-019/26","fecha":"2026-05-27","folio":"106","placas":"9CNF328","empresa":"UNIÓN REFORMA","eco":"UR-110","operador":"WUILVER JIMÉNEZ ","banco":"ALMACEN UNION","cap":14,"material":"ARENA","clasif":"SALIDA"},{"no":119,"req":"C.D.-019/26","fecha":"2026-05-27","folio":"86","placas":"486DW9","empresa":"UNIÓN REFORMA","eco":"UR-100","operador":"EDUARDO RODRÍGUEZ ","banco":"ALMACEN UNION","cap":14,"material":"ARENA","clasif":"SALIDA"},{"no":120,"req":"C.D.-019/26","fecha":"2026-05-27","folio":"112","placas":"9CNF324","empresa":"UNIÓN REFORMA","eco":"UR-55","operador":"ROSARIO GARCÍA RUIZ ","banco":"ALMACEN UNION","cap":14,"material":"ARENA","clasif":"SALIDA"},{"no":121,"req":"C.D.-019/26","fecha":"2026-05-27","folio":"105","placas":"9CNF328","empresa":"UNIÓN REFORMA","eco":"UR-110","operador":"WUILVER JIMÉNEZ ","banco":"ALMACEN UNION","cap":14,"material":"ARENA","clasif":"SALIDA"},{"no":122,"req":"C.D.-019/26","fecha":"2026-05-27","folio":"113","placas":"486DW9","empresa":"UNIÓN REFORMA","eco":"UR-100","operador":"EDUARDO RODRÍGUEZ ","banco":"ALMACEN UNION","cap":14,"material":"ARENA","clasif":"SALIDA"},{"no":123,"req":"C.D.-019/26","fecha":"2026-05-27","folio":"136","placas":"9CNF321","empresa":"UNIÓN REFORMA","eco":"UR-210","operador":"GERARDO MENDIOLA ","banco":"ALMACEN UNION","cap":14,"material":"ARENA","clasif":"SALIDA"},{"no":124,"req":"C.D.-019/26","fecha":"2026-05-27","folio":"138","placas":"9CNF312","empresa":"UNIÓN REFORMA","eco":"UR-209","operador":"JAVIER LARA CRUZ ","banco":"ALMACEN UNION","cap":14,"material":"ARENA","clasif":"SALIDA"},{"no":125,"req":"C.D.-019/26","fecha":"2026-05-27","folio":"128","placas":"9CNF328","empresa":"UNIÓN REFORMA","eco":"UR-110","operador":"WUILVER JIMÉNEZ ","banco":"ALMACEN UNION","cap":14,"material":"ARENA","clasif":"SALIDA"},{"no":126,"req":"C.D.-019/26","fecha":"2026-05-27","folio":"144","placas":"C26160H","empresa":"UNIÓN REFORMA","eco":"UR-102","operador":"ÁNGEL ÁLVAREZ ","banco":"ALMACEN UNION","cap":14,"material":"ARENA","clasif":"SALIDA"},{"no":127,"req":"C.D.-019/26","fecha":"2026-05-27","folio":"137","placas":"9CNF321","empresa":"UNIÓN REFORMA","eco":"UR-210","operador":"GERARDO MENDIOLA ","banco":"ALMACEN UNION","cap":14,"material":"ARENA","clasif":"SALIDA"},{"no":128,"req":"C.D.-019/26","fecha":"2026-05-27","folio":"139","placas":"9CNF312","empresa":"UNIÓN REFORMA","eco":"UR-209","operador":"JAVIER LARA CRUZ ","banco":"ALMACEN UNION","cap":14,"material":"ARENA","clasif":"SALIDA"},{"no":129,"req":"C.D.-019/26","fecha":"2026-05-27","folio":"110","placas":"9CNF324","empresa":"UNIÓN REFORMA","eco":"UR-55","operador":"ROSARIO GARCÍA RUIZ ","banco":"ALMACEN UNION","cap":14,"material":"ARENA","clasif":"SALIDA"},{"no":130,"req":"C.D.-019/26","fecha":"2026-05-27","folio":"114","placas":"CY9761C","empresa":"UNIÓN REFORMA","eco":"UR-120","operador":"JOSE ATILA ","banco":"ALMACEN UNION","cap":14,"material":"ARENA","clasif":"SALIDA"},{"no":131,"req":"C.D.-019/26","fecha":"2026-05-27","folio":"131","placas":"486DW9","empresa":"UNIÓN REFORMA","eco":"UR-100","operador":"EDUARDO RODRÍGUEZ ","banco":"ALMACEN UNION","cap":14,"material":"ARENA","clasif":"SALIDA"},{"no":132,"req":"C.D.-019/26","fecha":"2026-05-28","folio":"134","placas":"9CNF301","empresa":"UNIÓN REFORMA","eco":"UR-26","operador":"YIMI RUIZ ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":133,"req":"C.D.-019/26","fecha":"2026-05-28","folio":"142","placas":"CW9535F","empresa":"UNIÓN REFORMA","eco":"UR-03","operador":"JOSÉ CÓRDOVA ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":134,"req":"C.D.-019/26","fecha":"2026-05-28","folio":"146","placas":"9CNF205","empresa":"UNIÓN REFORMA","eco":"UR-104","operador":"DAVID LÓPEZ ","banco":"ALMACEN UNION","cap":7,"material":"ARENA","clasif":"SALIDA"},{"no":135,"req":"C.D.-019/26","fecha":"2026-05-28","folio":"126","placas":"VR31315","empresa":"UNIÓN REFORMA","eco":"UR-30","operador":"JULIO CESAR LÓPEZ ","banco":"ALMACEN UNION","cap":14,"material":"ARENA","clasif":"SALIDA"},{"no":136,"req":"C.D.-019/26","fecha":"2026-05-28","folio":"130","placas":"486DW9","empresa":"UNIÓN REFORMA","eco":"UR-100","operador":"EDUARDO RODRÍGUEZ ","banco":"ALMACEN UNION","cap":14,"material":"ARENA","clasif":"SALIDA"},{"no":137,"req":"C.D.-019/26","fecha":"2026-05-28","folio":"115","placas":"CY9761C","empresa":"UNIÓN REFORMA","eco":"UR-120","operador":"JOSE ATILA ","banco":"ALMACEN UNION","cap":14,"material":"ARENA","clasif":"SALIDA"},{"no":138,"req":"C.D.-019/26","fecha":"2026-05-28","folio":"111","placas":"9CNF324","empresa":"UNIÓN REFORMA","eco":"UR-55 ","operador":"ROSARIO GARCÍA ","banco":"ALMACEN UNION","cap":14,"material":"ARENA","clasif":"SALIDA"},{"no":139,"req":"C.D.-014/26","fecha":"2026-05-28","folio":"115","placas":"99AC9J","empresa":"UNIÓN REFORMA","eco":"1","operador":"JOSÉ ARTURO MONTELVO ","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":140,"req":"C.D.-018/26","fecha":"2026-05-28","folio":"A 4349","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNANDEZ","banco":"MAROGU","cap":30,"material":"REVESTIMIENTO","clasif":"ENTRADA"},{"no":141,"req":"C.D.-014/26","fecha":"2026-05-29","folio":"178","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNANDEZ","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":142,"req":"C.D.-014/26","fecha":"2026-05-29","folio":"123","placas":"CV0629K","empresa":"UNIÓN REFORMA","eco":"S/N","operador":"EDUARDO LÓPEZ VIDAL ","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":143,"req":"C.D.-014/26","fecha":"2026-05-29","folio":"179","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNANDEZ","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":144,"req":"C.D.-014/26","fecha":"2026-05-29","folio":"112","placas":"537DW9","empresa":"UNIÓN REFORMA","eco":"12","operador":"ROMAN ASCENCIO ","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":145,"req":"C.D.-018/26","fecha":"2026-05-30","folio":"A 4526","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNANDEZ","banco":"MAROGU","cap":30,"material":"REVESTIMIENTO","clasif":"ENTRADA"},{"no":146,"req":"C.D.-018/26","fecha":"2026-05-30","folio":"A 4590","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNANDEZ","banco":"MAROGU","cap":30,"material":"REVESTIMIENTO","clasif":"ENTRADA"},{"no":147,"req":"C.D.-014/26","fecha":"2026-05-30","folio":"3695","placas":"C26160H","empresa":"UNIÓN REFORMA","eco":"UR-102","operador":"LUCIO ASCENCIO ","banco":"LA JOYA","cap":14,"material":"ARENA","clasif":"ENTRADA"},{"no":148,"req":"C.D.-014/26","fecha":"2026-05-30","folio":"3694","placas":"CW9535 F","empresa":"UNIÓN REFORMA","eco":"UR-03","operador":"INOCENTE ASCENCIO ","banco":"LA JOYA","cap":7,"material":"ARENA","clasif":"ENTRADA"},{"no":149,"req":"C.D.-014/26","fecha":"2026-05-30","folio":"3692","placas":"DC2403F","empresa":"UNIÓN REFORMA","eco":"UR-02","operador":"ANTONIO MONTALVO ","banco":"LA JOYA","cap":14,"material":"ARENA","clasif":"ENTRADA"},{"no":150,"req":"C.D.-014/26","fecha":"2026-05-30","folio":"","placas":"CU6744D","empresa":"UNIÓN REFORMA","eco":"UR-211","operador":"JAVIER ASCENCIO ","banco":"LA JOYA","cap":14,"material":"ARENA","clasif":"ENTRADA"},{"no":151,"req":"C.D.-014/26","fecha":"2026-05-30","folio":"3690","placas":"DA3751","empresa":"UNIÓN REFORMA","eco":"UR-40","operador":"JAVIER ASCENCIO ","banco":"LA JOYA","cap":7,"material":"ARENA","clasif":"ENTRADA"},{"no":152,"req":"C.D.-014/26","fecha":"2026-05-30","folio":"3687","placas":"9CNF 328","empresa":"UNIÓN REFORMA","eco":"UR-110","operador":"CARLOS MARTÍNEZ ","banco":"LA JOYA","cap":14,"material":"ARENA","clasif":"ENTRADA"},{"no":153,"req":"C.D.-014/26","fecha":"2026-05-30","folio":"3693","placas":"DC2310F","empresa":"UNIÓN REFORMA","eco":"UR-07","operador":"JESÚS LORENZO ","banco":"LA JOYA","cap":7,"material":"ARENA","clasif":"ENTRADA"},{"no":154,"req":"C.D.-014/26","fecha":"2026-05-30","folio":"3686","placas":"4CNF413","empresa":"UNIÓN REFORMA","eco":"UR-99","operador":"RAÚL MEZA","banco":"LA JOYA","cap":14,"material":"ARENA","clasif":"ENTRADA"},{"no":155,"req":"C.D.-014/26","fecha":"2026-05-30","folio":"3683","placas":"CW9263","empresa":"UNIÓN REFORMA","eco":"UR-220","operador":"SALOMON ASCENCIO ","banco":"LA JOYA","cap":14,"material":"ARENA","clasif":"ENTRADA"},{"no":156,"req":"C.D.-014/26","fecha":"2026-05-30","folio":"3697","placas":"9CNF 320","empresa":"UNIÓN REFORMA","eco":"UR-82","operador":"CASTAÑEDA ","banco":"LA JOYA","cap":7,"material":"ARENA","clasif":"ENTRADA"},{"no":157,"req":"C.D.-014/26","fecha":"2026-05-30","folio":"3689","placas":"CW444F","empresa":"UNIÓN REFORMA","eco":"UR-22","operador":"JOSE REYES ","banco":"LA JOYA","cap":14,"material":"ARENA","clasif":"ENTRADA"},{"no":158,"req":"C.D.-014/26","fecha":"2026-05-30","folio":"3696","placas":"4CNE414","empresa":"UNIÓN REFORMA","eco":"UR-95","operador":"MARIO MARTÍNEZ ","banco":"LA JOYA","cap":14,"material":"ARENA","clasif":"ENTRADA"},{"no":159,"req":"C.D.-014/26","fecha":"2026-06-01","folio":"135","placas":"17BE8K","empresa":"UNIÓN REFORMA","eco":"33","operador":"CARLOS MARTÍNEZ ","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":160,"req":"C.D.-014/26","fecha":"2026-06-01","folio":"132","placas":"12BC9P","empresa":"UNIÓN REFORMA","eco":"1","operador":"ARTURO RODRÍGUEZ ","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":161,"req":"C.D.-014/26","fecha":"2026-06-01","folio":"125","placas":"99AC9J","empresa":"UNIÓN REFORMA","eco":"1","operador":"JOSE ARTURO MONTELVO ","banco":"SAMARIA I","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":162,"req":"C.D.-014/26","fecha":"2026-06-01","folio":"63811","placas":"66BK-3H","empresa":"XIMA","eco":"TC-06","operador":"ENRIQUE TORRES ","banco":"RANCHO NUEVO","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":163,"req":"C.D.-014/26","fecha":"2026-06-01","folio":"63801","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNÁNDEZ ","banco":"RANCHO NUEVO","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":164,"req":"C.D.-014/26","fecha":"2026-06-01","folio":"63812","placas":"66BK-3H","empresa":"XIMA","eco":"TC-06","operador":"ENRIQUE TORRES ","banco":"RANCHO NUEVO","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":165,"req":"C.D.-014/26","fecha":"2026-06-01","folio":"63803","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNÁNDEZ ","banco":"RANCHO NUEVO","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":166,"req":"C.D.-014/26","fecha":"2026-06-01","folio":"63813","placas":"66BK-3H","empresa":"XIMA","eco":"TC-06","operador":"ENRIQUE TORRES ","banco":"RANCHO NUEVO","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":167,"req":"C.D.-014/26","fecha":"2026-06-01","folio":"63804","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNÁNDEZ ","banco":"RANCHO NUEVO","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":168,"req":"C.D.-014/26","fecha":"2026-06-01","folio":"63814","placas":"66BK-3H","empresa":"XIMA","eco":"TC-06","operador":"ENRIQUE TORRES ","banco":"RANCHO NUEVO","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":169,"req":"C.D.-014/26","fecha":"2026-06-01","folio":"63802","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNÁNDEZ ","banco":"RANCHO NUEVO","cap":30,"material":"ARENA","clasif":"ENTRADA"},{"no":170,"req":"C.D.-014/26","fecha":"2026-06-01","folio":"63805","placas":"65BK-3H","empresa":"XIMA","eco":"TC-07","operador":"GUSTAVO HERNÁNDEZ ","banco":"RANCHO NUEVO","cap":30,"material":"ARENA","clasif":"ENTRADA"}];
+
+var ACAR_EXTRA=[];
+var ACAR_DATA=ACAR_BASE.concat(ACAR_EXTRA);
+
+function acInit(){
+  document.getElementById('ac-fecha').value=today();
+  // Populate banco filter dynamically from actual data
+  var bancos=[];
+  ACAR_DATA.forEach(function(r){if(r.banco&&bancos.indexOf(r.banco)<0)bancos.push(r.banco);});
+  bancos.sort();
+  var bancoSel=document.getElementById('ac-filt-banco');
+  if(bancoSel){
+    bancoSel.innerHTML='<option value="">Todos</option>'+bancos.map(function(b){return'<option>'+b+'</option>';}).join('');
+  }
+  // Also populate empresa filter dynamically
+  var emps=[];
+  ACAR_DATA.forEach(function(r){if(r.empresa&&emps.indexOf(r.empresa)<0)emps.push(r.empresa);});
+  emps.sort();
+  var empSel=document.getElementById('ac-filt-emp');
+  if(empSel){
+    empSel.innerHTML='<option value="">Todas</option>'+emps.map(function(e){return'<option>'+e+'</option>';}).join('');
+  }
+  acRender();
+}
+function acAgregar(){
+  var placas=document.getElementById('ac-placas').value.trim();
+  var cap=+document.getElementById('ac-cap').value;
+  if(!placas||!cap){msg('ac-msg','Ingresa placas y M3',false);return;}
+  var rec={no:ACAR_DATA.length+1,fecha:document.getElementById('ac-fecha').value||today(),empresa:document.getElementById('ac-emp').value,placas:placas,banco:document.getElementById('ac-banco').value,cap:cap,material:document.getElementById('ac-mat').value,clasif:document.getElementById('ac-clasif').value,req:document.getElementById('ac-req').value};
+  ACAR_EXTRA.push(rec);ACAR_DATA=ACAR_BASE.concat(ACAR_EXTRA);idbSet('acar_extra',ACAR_EXTRA);acRender();
+  document.getElementById('ac-placas').value='';document.getElementById('ac-cap').value='';document.getElementById('ac-banco').value='';
+  msg('ac-msg','Viaje agregado · Total: '+ACAR_DATA.length,true);sbSave('sfm_acarreos',rec);
+}
+function acRender(){
+  var emp=document.getElementById('ac-filt-emp').value;
+  var mat=document.getElementById('ac-filt-mat').value;
+  var clasifF=document.getElementById('ac-filt-clasif')?document.getElementById('ac-filt-clasif').value:'';
+  var bancoF=document.getElementById('ac-filt-banco')?document.getElementById('ac-filt-banco').value:'';
+  function norm(s){ return String(s||'').trim().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
+  var data=ACAR_DATA.filter(function(r){
+    return (!emp||norm(r.empresa)===norm(emp))&&
+           (!mat||norm(r.material)===norm(mat))&&
+           (!clasifF||norm(r.clasif)===norm(clasifF))&&
+           (!bancoF||norm(r.banco)===norm(bancoF));
+  });
+  var totalM3=data.reduce(function(s,r){return s+r.cap;},0);
+  var arena=data.filter(function(r){return r.material==='ARENA';}).reduce(function(s,r){return s+r.cap;},0);
+  var rev=data.filter(function(r){return r.material==='REVESTIMIENTO';}).reduce(function(s,r){return s+r.cap;},0);
+  var entradas=data.filter(function(r){return r.clasif==='ENTRADA';});
+  var salidas=data.filter(function(r){return r.clasif==='SALIDA';});
+  var m3ent=entradas.reduce(function(s,r){return s+r.cap;},0);
+  var m3sal=salidas.reduce(function(s,r){return s+r.cap;},0);
+  var kpis=document.getElementById('acar-kpis');
+  if(kpis)kpis.innerHTML=[
+    {l:'Viajes Total',v:data.length,c:'#0891b2'},
+    {l:'M3 Total',v:totalM3.toLocaleString(),c:'#0891b2'},
+    {l:'M3 Arena',v:arena.toLocaleString(),c:'#e8a000'},
+    {l:'M3 Revest.',v:rev.toLocaleString(),c:'#7c3aed'},
+    {l:'Entradas',v:entradas.length+' ('+m3ent.toLocaleString()+'M3)',c:'#16a34a'},
+    {l:'Salidas',v:salidas.length+' ('+m3sal.toLocaleString()+'M3)',c:'#dc2626'}
+  ].map(function(k){return'<div class="card" style="margin:0;border-left:4px solid '+k.c+'"><div style="font-size:9px;color:#6b7280;text-transform:uppercase">'+k.l+'</div><div style="font-size:16px;font-weight:900;color:'+k.c+'">'+k.v+'</div></div>';}).join('');
+  var byDay={};data.forEach(function(r){byDay[r.fecha]=(byDay[r.fecha]||0)+r.cap;});
+  var days=Object.keys(byDay).sort();
+  var maxDay=Math.max.apply(null,days.map(function(d){return byDay[d];})||[1]);
+  var dias=document.getElementById('ac-dias');
+  if(dias)dias.innerHTML=days.map(function(d){return'<div class="bar-row"><div class="bar-lbl">'+fmtD(d)+'</div><div class="bar-track"><div class="bar-fill" style="width:'+Math.round(byDay[d]/maxDay*100)+'%;background:#0891b2"></div></div><div class="bar-val" style="color:#0891b2">'+byDay[d]+' M3</div></div>';}).join('');
+  var byEmp={};data.forEach(function(r){if(!byEmp[r.empresa])byEmp[r.empresa]={v:0,m3:0};byEmp[r.empresa].v++;byEmp[r.empresa].m3+=r.cap;});
+  var empRes=document.getElementById('ac-emp-res');
+  if(empRes)empRes.innerHTML=Object.keys(byEmp).map(function(e){var ix=e==='XIMA';return'<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f1f5f9;font-size:12px"><span class="chip" style="background:'+(ix?'#dbeafe':'#dcfce7')+';color:'+(ix?'#1e40af':'#166534')+'">'+e+'</span><span><b>'+byEmp[e].v+'</b> viajes · <b>'+byEmp[e].m3.toLocaleString()+'</b> M3</span></div>';}).join('');
+  var tbody=document.getElementById('ac-tbody');
+  if(tbody){
+    var rows='';
+    data.forEach(function(r){
+      var ix=r.empresa==='XIMA';
+      var ia=r.material==='ARENA';
+      var isEnt=r.clasif==='ENTRADA';
+      rows+='<tr>';
+      rows+='<td style="color:#6b7280;font-size:10px">'+r.no+'</td>';
+      rows+='<td style="white-space:nowrap;font-size:11px"><b>'+fmtD(r.fecha)+'</b></td>';
+      rows+='<td><span class="chip" style="background:'+(ix?'#dbeafe':'#dcfce7')+';color:'+(ix?'#1e40af':'#166534')+'">'+(ix?'XIMA':'U.REF')+'</span></td>';
+      rows+='<td style="font-family:monospace;font-size:10px">'+r.placas+'</td>';
+      rows+='<td style="font-size:10px;color:#6b7280">'+(r.eco||'')+'</td>';
+      rows+='<td style="font-size:11px">'+r.banco+'</td>';
+      rows+='<td style="text-align:center"><b>'+r.cap+'</b></td>';
+      rows+='<td><span class="chip" style="background:'+(ia?'#fef3c7':'#f3e8ff')+';color:'+(ia?'#92400e':'#6b21a8')+'">'+(ia?'ARENA':'REVEST.')+'</span></td>';
+      rows+='<td><span class="chip" style="background:'+(isEnt?'#dcfce7':'#fee2e2')+';color:'+(isEnt?'#166534':'#991b1b')+'">'+(isEnt?'ENTRADA':'SALIDA')+'</span></td>';
+      rows+='<td style="font-size:10px;color:#6b7280">'+(r.req||r.folio||'')+'</td>';
+      rows+='</tr>';
+    });
+    tbody.innerHTML=rows;
+  }
+}
+
+// ══════════════════
+// DOCUMENTOS
+// ══════════════════
+function dcInit(){
+  document.getElementById('dc-fecha').value=today();
+  dcRender();
+}
+function dcAgregar(){
+  var nombre=document.getElementById('dc-nombre').value.trim();
+  if(!nombre){msg('dc-msg','Ingresa nombre',false);return;}
+  var rec={tipo:document.getElementById('dc-tipo').value,nombre:nombre,folio:document.getElementById('dc-folio').value,fecha:document.getElementById('dc-fecha').value||today(),vence:document.getElementById('dc-vence').value||null};
+  DOCUMENTOS_EXTRA.unshift(rec);idbSaveAll();dcRender();
+  document.getElementById('dc-nombre').value='';document.getElementById('dc-folio').value='';
+  msg('dc-msg','Documento guardado',true);sbSave('sfm_documentos',rec);
+}
+function dcRender(){
+  var el=document.getElementById('dc-lista');if(!el)return;
+  var all=DOCS_BASE.concat(DOCUMENTOS_EXTRA);
+  var td=today();
+  var h='<table><thead><tr><th>Tipo</th><th>Documento</th><th>Folio</th><th>Estado</th></tr></thead><tbody>';
+  all.forEach(function(d){
+    var st='<span class="chip" style="background:#dcfce7;color:#166534">Vigente</span>';
+    if(d.vence){var dias=Math.round((new Date(d.vence)-new Date(td))/(1000*86400));if(dias<0)st='<span class="chip" style="background:#fee2e2;color:#dc2626">Vencido</span>';else if(dias<=30)st='<span class="chip" style="background:#fef3c7;color:#92400e">'+dias+'d</span>';}
+    h+='<tr><td style="font-size:10px">'+d.tipo+'</td><td style="font-size:11px"><b>'+d.nombre.slice(0,26)+'</b></td><td style="font-family:monospace;font-size:10px">'+(d.folio||'')+'</td><td>'+st+'</td></tr>';
+  });
+  h+='</tbody></table>';el.innerHTML=h;
+}
+
+
+// ══════════════════════════════════════════════════════
+// PERSISTENCIA LOCAL — IndexedDB
+// Datos guardados permanentemente en este dispositivo.
+// No se borran al cerrar la app ni al actualizar GitHub.
+// ══════════════════════════════════════════════════════
+var _idb = null;
+function idbOpen(){
+  return new Promise(function(res,rej){
+    if(_idb){res(_idb);return;}
+    var r=indexedDB.open('sfm_v4',1);
+    r.onupgradeneeded=function(e){
+      var db=e.target.result;
+      if(!db.objectStoreNames.contains('data'))
+        db.createObjectStore('data',{keyPath:'k'});
+    };
+    r.onsuccess=function(e){_idb=e.target.result;res(_idb);};
+    r.onerror=function(){rej();};
+  });
+}
+function idbSet(key,val){
+  idbOpen().then(function(db){
+    var tx=db.transaction('data','readwrite');
+    tx.objectStore('data').put({k:key,v:JSON.stringify(val)});
+  }).catch(function(){});
+}
+function idbGet(key,cb){
+  idbOpen().then(function(db){
+    var tx=db.transaction('data','readonly');
+    var req=tx.objectStore('data').get(key);
+    req.onsuccess=function(e){
+      var rec=e.target.result;
+      try{cb(rec?JSON.parse(rec.v):null);}catch(x){cb(null);}
+    };
+    req.onerror=function(){cb(null);};
+  }).catch(function(){cb(null);});
+}
+
+// Auto-save all data to IDB
+function idbSaveAll(){
+  var ind=document.getElementById('save-ind');if(ind){ind.textContent='✓ Guardado '+new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});}
+  idbSet('avances',AVANCES);
+  idbSet('nt',NT_ROWS);
+  idbSet('personal',PERSONAL);
+  idbSet('asistencia',ASISTENCIA);
+  idbSet('equipos',EQUIPOS);
+  idbSet('horas',HORAS);
+  idbSet('diesel',DIESEL);
+  idbSet('rds',RDS);
+  idbSet('movimientos',MOVIMIENTOS);
+  idbSet('documentos_extra',DOCUMENTOS_EXTRA);
+  idbSet('acar_extra',ACAR_EXTRA);
+}
+
+// Load all data from IDB on startup
+function idbLoadAll(){
+  idbGet('avances',function(d){if(d&&d.length)AVANCES=d;});
+  idbGet('nt',function(d){if(d&&d.length)NT_ROWS=d;});
+  idbGet('personal',function(d){if(d&&d.length){PERSONAL=d;var c=document.getElementById('p-cnt');if(c)c.textContent=PERSONAL.length;}});
+  idbGet('asistencia',function(d){if(d&&d.length)ASISTENCIA=d;});
+  idbGet('equipos',function(d){if(d&&d.length)EQUIPOS=d;});
+  idbGet('horas',function(d){if(d&&d.length)HORAS=d;});
+  idbGet('diesel',function(d){if(d&&d.length)DIESEL=d;});
+  idbGet('rds',function(d){if(d&&d.length)RDS=d;});
+  idbGet('movimientos',function(d){if(d&&d.length)MOVIMIENTOS=d;});
+  idbGet('documentos_extra',function(d){if(d&&d.length)DOCUMENTOS_EXTRA=d;});
+  idbGet('acar_extra',function(d){if(d&&d.length){ACAR_EXTRA=d;ACAR_DATA=ACAR_BASE.concat(ACAR_EXTRA);}});
+}
+
+// ══════════════════════════════════════
+// IMPORTAR EXCEL DE ACARREOS
+// ══════════════════════════════════════
+function acImportarExcel(input){
+  var file=input.files[0];
+  if(!file){return;}
+  var reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      var data=new Uint8Array(e.target.result);
+      var wb=XLSX.read(data,{type:'array'});
+      var ws=wb.Sheets[wb.SheetNames[0]];
+      var rows=XLSX.utils.sheet_to_json(ws,{defval:''});
+      
+      if(!rows.length){msg('ac-import-msg','El archivo esta vacio',false);return;}
+      
+      // Normalize column names (case insensitive)
+      var imported=[];
+        rows.forEach(function(row,i){
+          var r={};
+          Object.keys(row).forEach(function(k){r[k.toLowerCase().trim()]=row[k];});
+          // Support MASTER_ACARREOS format and generic format
+          var fechaRaw=r['fecha recepcion/salida']||r['fecha recepcion']||r['fecha']||r['date']||'';
+          var noVal=+(r['no.'||'']||r['no']||r['#']||0)||(ACAR_BASE.length+ACAR_EXTRA.length+imported.length+1);
+          var rec={
+            no: noVal,
+            req: r['no. requisicion']||r['req']||r['requisicion']||'',
+            folio: r['cheque folio']||r['folio']||'',
+            fecha: '',
+            empresa: String(r['empresa (acarreo)']||r['empresa']||'').trim(),
+            placas: String(r['placas']||r['placa']||'').trim(),
+            eco: r['no. economico']||r['eco']||'',
+            operador: r['operador']||'',
+            banco: String(r['banco/almacen']||r['banco']||r['origen']||'').trim(),
+            cap: +(r['capacidad '||'']||r['capacidad']||r['cap']||r['m3']||0),
+            material: String(r['tipo de material']||r['material']||'ARENA').trim().toUpperCase(),
+            clasif: String(r['clasificacion']||r['clasif']||'ENTRADA').trim().toUpperCase(),
+          };
+          if(fechaRaw && typeof fechaRaw==='number'){
+            var d=new Date(Math.round((fechaRaw-25569)*86400*1000));
+            rec.fecha=d.toISOString().slice(0,10);
+          } else if(fechaRaw){
+            var fs=String(fechaRaw).trim().slice(0,10);
+            var dm=fs.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+            if(dm)rec.fecha=dm[3]+'-'+('0'+dm[2]).slice(-2)+'-'+('0'+dm[1]).slice(-2);
+            else rec.fecha=fs;
+          }
+          if(rec.placas||rec.empresa) imported.push(rec);
+        });
+        if(!imported.length){msg('ac-import-msg','No se encontraron registros validos',false);return;}
+      
+      // Deduplicate using 'no' (trip number) as unique key
+      var existingNos=new Set(ACAR_DATA.map(function(r){return String(r.no);}));
+      var nuevos=imported.filter(function(r){return r.no && !existingNos.has(String(r.no));});
+      
+      // Add to ACAR_EXTRA
+      ACAR_EXTRA=ACAR_EXTRA.concat(nuevos);
+      ACAR_DATA=ACAR_BASE.concat(ACAR_EXTRA);
+      idbSet('acar_extra',ACAR_EXTRA);
+      
+      // Save each to Supabase
+      nuevos.forEach(function(rec){sbSave('sfm_acarreos',rec);});
+      
+      acRender();
+      
+      // Show preview
+      var preview='<div style="background:#f0fdf4;border-radius:6px;padding:10px;font-size:12px;margin-top:8px">';
+      if(nuevos.length>0){
+        preview+='<b style="color:#166534">'+nuevos.length+' nuevos viajes importados</b>';
+        if(imported.length-nuevos.length>0) preview+=' ('+( imported.length-nuevos.length)+' ya existentes omitidos)';
+      } else {
+        preview+='<b style="color:#166534">Base de datos actualizada</b>';
+        preview+='<br><span style="color:#6b7280">Todos los '+imported.length+' registros ya estaban en la app (base precargada del Excel master)</span>';
+      }
+      preview+='<br><span style="color:#374151;font-weight:700">Total en app: '+ACAR_DATA.length+' viajes · '+ACAR_DATA.reduce(function(s,r){return s+r.cap;},0).toLocaleString()+' M3</span></div>';
+      document.getElementById('ac-import-preview').innerHTML=preview;
+      if(nuevos.length>0) msg('ac-import-msg',nuevos.length+' viajes importados correctamente',true);
+      else msg('ac-import-msg','Base ya actualizada con '+ACAR_DATA.length+' viajes',true);
+      
+      // Reset file input
+      input.value='';
+      
+    }catch(err){
+      msg('ac-import-msg','Error al leer el archivo: '+err.message,false);
+      console.error(err);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// INIT
+document.getElementById('dashboard').style.display='block';
+idbLoadAll();
+// Update dashboard counters after IDB loads
+setTimeout(function(){
+  var pc=document.getElementById('dash-pers-cnt');if(pc&&PERSONAL.length)pc.textContent=PERSONAL.length+' personas';
+  var ec=document.getElementById('dash-eq-cnt');if(ec&&EQUIPOS.length)ec.textContent=EQUIPOS.length+' equipos';
+  var mc=document.getElementById('dash-mat-cnt');if(mc&&MOVIMIENTOS.length)mc.textContent=MOVIMIENTOS.length+' movs.';
+  var av=document.getElementById('dash-acar-viajes');
+  var am=document.getElementById('dash-acar-m3');
+  var total=ACAR_DATA.length;
+  var m3=ACAR_DATA.reduce(function(s,r){return s+r.cap;},0);
+  if(av)av.textContent=total;
+  if(am)am.textContent=m3.toLocaleString()+' M³';
+},300);
+</script>
+</body>
+</html>
